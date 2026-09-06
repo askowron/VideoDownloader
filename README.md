@@ -40,4 +40,4 @@ Run the built `VideoDownloader.exe`, or `dotnet run --project VideoDownloader` f
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+GPLv2 — see [LICENSE](LICENSE).
