@@ -153,11 +153,18 @@ namespace VideoDownloader
             return true;
         }
 
-        private async Task BatchDownload()
+        /// <summary>
+        /// Downloads the URL currently in <c>tbLink</c> as part of a batch. On the first call of a batch
+        /// (<paramref name="interactive"/> = true) the source-chooser dialog is shown so the user can pick
+        /// video/audio quality; the picked sources are returned so the caller can reuse them as
+        /// <paramref name="preferredSources"/> for the rest of the batch, which then picks quality
+        /// automatically without prompting again.
+        /// </summary>
+        private async Task<(DataVideoSource video, DataAudioSource audio)?> BatchDownload(bool interactive, (DataVideoSource video, DataAudioSource audio)? preferredSources)
         {
             _Notifications.ClearOldNotifications();
 
-            if (!CheckDestination()) return;
+            if (!CheckDestination()) return null;
 
             Downloader downloader = new Downloader(_Notifications);
             try
@@ -169,7 +176,19 @@ namespace VideoDownloader
                 {
                     Cursor = Cursors.WaitCursor;
 
-                    var sources = await scForm.ChooseBestQuality();
+                    Tuple<DataVideoSource, DataAudioSource> sources;
+                    if (interactive)
+                    {
+                        if (scForm.ShowDialog(this) != DialogResult.OK)
+                            return null;
+
+                        sources = new Tuple<DataVideoSource, DataAudioSource>(scForm.SelectedSource.Item1, scForm.SelectedSource.Item2);
+                    }
+                    else
+                    {
+                        sources = await scForm.ChooseBestQuality(preferredSources?.video, preferredSources?.audio);
+                    }
+
                     if (sources != null)
                     {
                         DownloadJobListBoxItem item = new DownloadJobListBoxItem();
@@ -182,13 +201,18 @@ namespace VideoDownloader
                         EnqueueDownload(downloader, (sources.Item1, sources.Item2), item);
                         downloader = null;
                         tbLink.Clear();
+
+                        return (sources.Item1, sources.Item2);
                     }
+
+                    return null;
                 }
             }
             catch (Exception ex)
             {
                 _Notifications.AddMessage(Notifications.NotificationType.Warning, Errors.ParseErrorMessage(ex));
                 tbLink.Clear();
+                return null;
             }
             finally
             {
@@ -425,10 +449,23 @@ namespace VideoDownloader
                 string.Format(Localization.T("Found {0} urls! Are you sure you want to download them all?"), lines.Length),
                 Localization.T("Download"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
+                // Ask for video/audio quality only for the first URL; reuse that choice for the rest of the batch.
+                (DataVideoSource video, DataAudioSource audio)? preferredSources = null;
+                bool isFirst = true;
+
                 foreach (string line in lines)
                 {
                     tbLink.Text = line;
-                    await BatchDownload();
+                    var result = await BatchDownload(isFirst, preferredSources);
+
+                    if (isFirst)
+                    {
+                        if (result == null)
+                            break;
+
+                        preferredSources = result;
+                        isFirst = false;
+                    }
                 }
             }
         }

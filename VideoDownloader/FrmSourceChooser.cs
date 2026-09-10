@@ -77,7 +77,13 @@ namespace VideoDownloader
             DialogResult = DialogResult.Cancel;
         }
 
-        public async Task<Tuple<DataVideoSource, DataAudioSource>> ChooseBestQuality()
+        /// <summary>
+        /// Picks video/audio sources automatically. When <paramref name="preferredVideo"/>/<paramref name="preferredAudio"/>
+        /// are given (the sources chosen for an earlier video in the same batch), tries to match their
+        /// resolution/language first so a whole batch downloads at a consistent quality; falls back to the
+        /// usual best-quality defaults when no match is found.
+        /// </summary>
+        public async Task<Tuple<DataVideoSource, DataAudioSource>> ChooseBestQuality(DataVideoSource preferredVideo = null, DataAudioSource preferredAudio = null)
         {
             if (_downloader == null)
                 throw new Exception(Localization.T("No downloader assigned."));
@@ -92,15 +98,33 @@ namespace VideoDownloader
                 VideoTitle = sources.VideoTitle;
                 Duration = sources.Duration;
 
-                return new Tuple<DataVideoSource, DataAudioSource>(
-                    sources.VideoSources.LastOrDefault(),
-                    sources.AudioSources.FirstOrDefault()
-                );
+                var video = MatchVideo(sources.VideoSources, preferredVideo) ?? sources.VideoSources.LastOrDefault();
+                var audio = MatchAudio(sources.AudioSources, preferredAudio) ?? sources.AudioSources.FirstOrDefault();
+
+                return new Tuple<DataVideoSource, DataAudioSource>(video, audio);
             }
             finally
             {
                 Cursor = Cursors.Default;
             }
+        }
+
+        private static DataVideoSource MatchVideo(List<DataVideoSource> sources, DataVideoSource preferred)
+        {
+            if (preferred == null)
+                return null;
+
+            return sources.FirstOrDefault(s => s.Resolution == preferred.Resolution && s.Extension == preferred.Extension)
+                ?? sources.FirstOrDefault(s => s.Resolution == preferred.Resolution);
+        }
+
+        private static DataAudioSource MatchAudio(List<DataAudioSource> sources, DataAudioSource preferred)
+        {
+            if (preferred == null)
+                return null;
+
+            return sources.FirstOrDefault(s => s.Language == preferred.Language && s.Extension == preferred.Extension)
+                ?? sources.FirstOrDefault(s => s.Language == preferred.Language);
         }
 
         public (DataVideoSource, DataAudioSource) SelectedSource
