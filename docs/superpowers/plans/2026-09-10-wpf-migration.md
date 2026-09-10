@@ -45,13 +45,15 @@ Write `VideoDownloader.Core/VideoDownloader.Core.csproj`:
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
 </Project>
 ```
+
+`net8.0-windows` (not plain `net8.0`) because Task 2 moves in `Windows/Registry.cs`, which calls the `[SupportedOSPlatform("windows")]`-gated `Microsoft.Win32.Registry` APIs — under a bare `net8.0` TFM that produces CA1416 analyzer warnings for no benefit, since every consumer of this library (`VideoDownloader`, `VideoDownloader.Wpf`) is Windows-only anyway. This TFM choice alone does not pull in any UI framework: `UseWindowsForms`/`UseWPF` stay unset, so `Core` still references neither WinForms nor WPF assemblies, satisfying the Global Constraints.
 
 - [ ] **Step 2: Add the project to the solution**
 
@@ -1816,7 +1818,7 @@ namespace VideoDownloader.Wpf
 
         private void Window_Activated(object sender, EventArgs e)
         {
-            // Clipboard-paste-on-activate is wired in Task 16.
+            // Clipboard-paste-on-activate is wired in Task 15.
         }
 
         private void JobList_DragEnter(object sender, DragEventArgs e)
@@ -1826,7 +1828,7 @@ namespace VideoDownloader.Wpf
 
         private void JobList_Drop(object sender, DragEventArgs e)
         {
-            // Multi-URL drag-drop is wired in Task 16.
+            // Multi-URL drag-drop is wired in Task 15.
         }
     }
 }
