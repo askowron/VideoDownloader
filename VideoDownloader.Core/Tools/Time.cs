@@ -1,6 +1,6 @@
 ﻿namespace VideoDownloader.Core.Tools
 {
-    internal class Time
+    public class Time
     {
         public static string FromSeconds(float totalSeconds)
         {
