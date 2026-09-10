@@ -37,6 +37,10 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\VideoDownloader.Core\VideoDownloader.Core.csproj" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy &quot;$(SolutionDir)ExternalLib\*.exe&quot; &quot;$(TargetDir)&quot; /Y /I" />
   </Target>
