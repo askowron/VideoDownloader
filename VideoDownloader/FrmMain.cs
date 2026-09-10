@@ -44,7 +44,8 @@ namespace VideoDownloader
         {
             InitializeComponent();
 
-            _Notifications = new Notifications(flpNotifications);
+            _Notifications = new Notifications();
+            _Notifications.Items.CollectionChanged += Notifications_CollectionChanged;
 
             DownloadJobCountChanged += FrmMain_DownloadJobCountChanged;
 
@@ -268,6 +269,41 @@ namespace VideoDownloader
         }
 
         #region Notifications Functions
+        private void Notifications_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (InvokeRequired)
+            {
+                Invoke(() => Notifications_CollectionChanged(sender, e));
+                return;
+            }
+
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            {
+                foreach (Control c in flpNotifications.Controls.OfType<NotificationControl>().ToArray())
+                    c.Dispose();
+                return;
+            }
+
+            if (e.OldItems != null)
+            {
+                foreach (NotificationItem removed in e.OldItems)
+                {
+                    var control = flpNotifications.Controls.OfType<NotificationControl>()
+                        .FirstOrDefault(c => c.Tag == removed);
+                    control?.Dispose();
+                }
+            }
+
+            if (e.NewItems != null)
+            {
+                foreach (NotificationItem added in e.NewItems)
+                {
+                    var control = new NotificationControl(added) { Tag = added };
+                    flpNotifications.Controls.Add(control);
+                }
+            }
+        }
+
         private void flpNotifications_ControlAdded(object sender, ControlEventArgs e)
         {
             int height = e.Control.Height + e.Control.Margin.Top + e.Control.Margin.Bottom;
