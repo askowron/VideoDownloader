@@ -1,12 +1,10 @@
-﻿using System;
+using System;
 using System.Text;
 using YoutubeDLSharp;
 using YoutubeDLSharp.Options;
-using VideoDownloader.Controls;
-using VideoDownloader.Core;
 using VideoDownloader.Core.Tools;
 
-namespace VideoDownloader
+namespace VideoDownloader.Core
 {
     public class Downloader : IDisposable
     {
@@ -63,10 +61,10 @@ namespace VideoDownloader
             var videoFormats = video_info.Data?.Formats?.Where(f => !f.VideoCodec.Equals("none")).ToArray();
             var audioFormats = video_info.Data?.Formats?
                     .Where(f => (f.AudioCodec != null && !f.AudioCodec.Equals("none")) || "audio only".Equals(f.Resolution))
-                    .Where(f => f.FormatNote == null || 
-                        !f.FormatNote.Contains("description", StringComparison.OrdinalIgnoreCase) && 
-                        !f.FormatNote.Contains("hard of hearing", StringComparison.OrdinalIgnoreCase) && 
-                        !f.FormatNote.Contains("visual impairment", StringComparison.OrdinalIgnoreCase) && 
+                    .Where(f => f.FormatNote == null ||
+                        !f.FormatNote.Contains("description", StringComparison.OrdinalIgnoreCase) &&
+                        !f.FormatNote.Contains("hard of hearing", StringComparison.OrdinalIgnoreCase) &&
+                        !f.FormatNote.Contains("visual impairment", StringComparison.OrdinalIgnoreCase) &&
                         !f.FormatNote.Contains("Audiodeskrypcja", StringComparison.OrdinalIgnoreCase))
                     .ToArray();
 
@@ -87,15 +85,15 @@ namespace VideoDownloader
             return dataSource;
         }
 
-        public async Task Download((DataVideoSource video, DataAudioSource audio) sources, DownloadJobListBoxItem job)
+        public async Task Download((DataVideoSource video, DataAudioSource audio) sources, DownloadJob job)
         {
             var progress = new Progress<DownloadProgress>(p => {
                 if (p.Progress > 0)
                     job.ProgressPercentage = (double)p.Progress * 100;
 
-                job.DownloadSpeed = p.DownloadSpeed;
+                job.Speed = p.DownloadSpeed;
                 job.ETA = p.ETA;
-                job.VideoFileSize = p.TotalDownloadSize;
+                job.FileSize = p.TotalDownloadSize;
             });
 
             job.DownloadBegin();
@@ -106,12 +104,12 @@ namespace VideoDownloader
                 {
                     Output = Path.Combine(
                         Path.TrimEndingDirectorySeparator(DestinationPath),
-                        string.Join("_", job.VideoTitle.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).Trim() + "." +
-                        job.VideoFormat),
+                        string.Join("_", job.Title.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).Trim() + "." +
+                        job.Format),
                     CheckFormats = true,
                     //CheckAllFormats = true,
                     CustomOptions = new IOption[]
-                    { 
+                    {
                         new Option<string>("--progress-delta", "0.01"),
                         new Option<string>("-v", null)
                     }
@@ -121,7 +119,7 @@ namespace VideoDownloader
                     $"{sources.video.Id}+{sources.audio.Id}",
                     DownloadMergeFormat.Mp4,
                     VideoRecodeFormat.Mp4,
-                    job.CancellationToken.Token,
+                    job.CancellationTokenSource!.Token,
                     progress,
                     null,
                     extraOptions
@@ -131,19 +129,19 @@ namespace VideoDownloader
             }
             catch (OperationCanceledException)
             {
-                job.Dispose();
+                job.State = DownloadingState.Canceled;
                 return;
             }
             catch (Exception ex)
             {
-                job.State = DownloadJobListBoxItem.DownloadingState.Failed;
-                _Notifications.Error(string.Format(Localization.T("Download failed ({0}): {1}"), job.VideoTitle, Errors.ParseErrorMessage(ex)));
+                job.State = DownloadingState.Failed;
+                _Notifications.Error(string.Format(Localization.T("Download failed ({0}): {1}"), job.Title, Errors.ParseErrorMessage(ex)));
             }
             finally
             {
-                job.CancellationToken.Dispose();
+                job.CancellationTokenSource?.Dispose();
             }
-            
+
         }
 
 

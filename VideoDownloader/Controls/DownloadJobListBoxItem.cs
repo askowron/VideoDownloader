@@ -1,156 +1,86 @@
-﻿using VideoDownloader.Core;
+using VideoDownloader.Core;
 
 namespace VideoDownloader.Controls
 {
     public partial class DownloadJobListBoxItem : UserControl
     {
-        public enum DownloadingState
-        {
-            Waiting,
-            Downloading,
-            Completed,
-            Failed,
-            Canceled
-        }
+        public DownloadJob Job { get; }
 
-        private CancellationTokenSource _cts;
-
-        private string _downloadSpeed = string.Empty;
-        private string _eta = string.Empty;
-        private string _videoFormat = string.Empty;
-        private DownloadingState _state;
-
-        public DownloadingState State 
-        { 
-            get => _state;
-            set 
-            {
-                _state = value;
-                if(StateChanged != null)
-                    StateChanged.Invoke(this, _state);
-            } 
-        }
-
-        protected event EventHandler<DownloadingState> StateChanged;
-
-        public DownloadJobListBoxItem()
+        public DownloadJobListBoxItem(DownloadJob job)
         {
             InitializeComponent();
-            State = DownloadingState.Waiting;
-            StateChanged += DownloadJobListBoxItem_StateChanged;
+            Job = job;
+            Job.PropertyChanged += Job_PropertyChanged;
+            RenderAll();
         }
 
-        private void DownloadJobListBoxItem_StateChanged(object? sender, DownloadingState newState)
+        private void Job_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            switch(newState)
+            if (InvokeRequired)
+            {
+                Invoke(() => Job_PropertyChanged(sender, e));
+                return;
+            }
+
+            switch (e.PropertyName)
+            {
+                case nameof(DownloadJob.Title): lTitle.Text = Job.Title; break;
+                case nameof(DownloadJob.Url): lUrl.Text = Job.Url; break;
+                case nameof(DownloadJob.Resolution): lResolution.Text = Localization.T("Resolution:") + " " + Job.Resolution; break;
+                case nameof(DownloadJob.Format): lFormat.Text = Localization.T("Format:") + " " + Job.Format; break;
+                case nameof(DownloadJob.Duration): lDuration.Text = Localization.T("Duration:") + " " + Job.Duration; break;
+                case nameof(DownloadJob.FileSize): lSize.Text = Localization.T("Size (MB):") + " " + Job.FileSize; break;
+                case nameof(DownloadJob.Speed): progressBar.Speed = Job.Speed; progressBar.Invalidate(); break;
+                case nameof(DownloadJob.ETA): progressBar.ETA = Job.ETA; progressBar.Invalidate(); break;
+                case nameof(DownloadJob.ProgressPercentage): progressBar.PreciseValue = Job.ProgressPercentage; break;
+                case nameof(DownloadJob.State): RenderState(); break;
+            }
+        }
+
+        private void RenderAll()
+        {
+            lTitle.Text = Job.Title;
+            lUrl.Text = Job.Url;
+            lResolution.Text = Localization.T("Resolution:") + " " + Job.Resolution;
+            lFormat.Text = Localization.T("Format:") + " " + Job.Format;
+            lDuration.Text = Localization.T("Duration:") + " " + Job.Duration;
+            lSize.Text = Localization.T("Size (MB):") + " " + Job.FileSize;
+            progressBar.Speed = Job.Speed;
+            progressBar.ETA = Job.ETA;
+            progressBar.PreciseValue = Job.ProgressPercentage;
+            RenderState();
+        }
+
+        private void RenderState()
+        {
+            switch (Job.State)
             {
                 case DownloadingState.Waiting:
-                    progressBar.BackColor = System.Drawing.Color.LightYellow;
+                    progressBar.BackColor = Color.LightYellow;
                     break;
                 case DownloadingState.Downloading:
                     progressBar.BackColor = progressBar.BaseBackColor;
                     break;
                 case DownloadingState.Completed:
-                    progressBar.BackColor = System.Drawing.Color.LightSkyBlue;
+                    progressBar.BackColor = Color.LightSkyBlue;
+                    btnCancel.Visible = false;
                     break;
                 case DownloadingState.Failed:
-                    progressBar.BackColor = System.Drawing.Color.OrangeRed;
+                    progressBar.BackColor = Color.OrangeRed;
                     break;
                 case DownloadingState.Canceled:
-                    progressBar.BackColor = System.Drawing.Color.LightSlateGray;
+                    progressBar.BackColor = Color.LightSlateGray;
                     break;
             }
-
             progressBar.Invalidate();
-        }
-
-        public string VideoTitle
-        {
-            get => lTitle.Text;
-            set => lTitle.Text = value;
-        }
-
-        public string VideoDuration
-        {
-            get => lDuration.Text;
-            set => lDuration.Text = Localization.T("Duration:") + " " + value;
-        }
-
-        public string VideoResolution
-        {
-            get => lResolution.Text;
-            set => lResolution.Text = Localization.T("Resolution:") + " " + value;
-        }
-
-        public string VideoFileSize
-        {
-            get => lSize.Text;
-            set => lSize.Text = Localization.T("Size (MB):") + " " + value;
-        }
-
-        public string URL
-        {
-            get => lUrl.Text;
-            set => lUrl.Text = value;
-        }
-
-        public string VideoFormat
-        {
-            get => _videoFormat;
-            set
-            {
-                _videoFormat = value;
-                lFormat.Text = Localization.T("Format:") + " " + value;
-            }
-        }
-
-        public string DownloadSpeed
-        {
-            get => progressBar.Speed;
-            set => progressBar.Speed = value;
-        }
-
-        public string ETA
-        {
-            get => progressBar.ETA;
-            set => progressBar.ETA = value;
-        }
-
-        public double ProgressPercentage
-        {
-            get => progressBar.Value;
-            set
-            {
-                progressBar.PreciseValue = value;
-            }
-        }
-
-        public CancellationTokenSource CancellationToken
-        {
-            get => _cts;
-            set => _cts = value;
-        }
-
-        internal void DownloadBegin()
-        {
-            _cts?.Dispose();
-            CancellationToken = new CancellationTokenSource();
-            State = DownloadingState.Downloading;
-        }
-
-        internal void DownloadEnd()
-        {
-            State = DownloadingState.Completed;
-            btnCancel.Visible = false;
-            progressBar.PreciseValue = 100.0;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            if (State == DownloadingState.Downloading && MessageBox.Show(Localization.T("Are you sure you want to cancel downloading?"), Localization.T("Downloading"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (Job.State == DownloadingState.Downloading && MessageBox.Show(Localization.T("Are you sure you want to cancel downloading?"), Localization.T("Downloading"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
-                CancellationToken.Cancel();
-                State = DownloadingState.Canceled;
+                Job.CancellationTokenSource?.Cancel();
+                Job.State = DownloadingState.Canceled;
             }
         }
     }

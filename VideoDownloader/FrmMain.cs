@@ -19,7 +19,7 @@ namespace VideoDownloader
         {
             public required Downloader Downloader { get; init; }
             public required (DataVideoSource video, DataAudioSource audio) Sources { get; init; }
-            public required DownloadJobListBoxItem Job { get; init; }
+            public required DownloadJob Job { get; init; }
         }
 
         private readonly Queue<PendingDownload> _downloadQueue = new();
@@ -32,8 +32,8 @@ namespace VideoDownloader
 
         #region Jobs Information
         private DownloadJobListBoxItem[] DownloadJobListBoxItems => flpJobs.Controls.Cast<DownloadJobListBoxItem>().ToArray();
-        protected int DownloadJobActiveCount => DownloadJobListBoxItems.Count(item => item.State == DownloadJobListBoxItem.DownloadingState.Downloading);
-        protected int DownloadJobCompletedCount => DownloadJobListBoxItems.Count(item => item.State == DownloadJobListBoxItem.DownloadingState.Completed);
+        protected int DownloadJobActiveCount => DownloadJobListBoxItems.Count(item => item.Job.State == DownloadingState.Downloading);
+        protected int DownloadJobCompletedCount => DownloadJobListBoxItems.Count(item => item.Job.State == DownloadingState.Completed);
         protected int DownloadJobCount => DownloadJobListBoxItems.Length;
         #endregion
         #region Events
@@ -84,9 +84,9 @@ namespace VideoDownloader
         /// Adds a job to the visible job list and to the pending-download queue, then attempts to start it
         /// straight away if the simultaneous-download limit allows it.
         /// </summary>
-        private void EnqueueDownload(Downloader downloader, (DataVideoSource video, DataAudioSource audio) sources, DownloadJobListBoxItem job)
+        private void EnqueueDownload(Downloader downloader, (DataVideoSource video, DataAudioSource audio) sources, DownloadJob job)
         {
-            flpJobs.Controls.Add(job);
+            flpJobs.Controls.Add(new DownloadJobListBoxItem(job));
             _downloadQueue.Enqueue(new PendingDownload { Downloader = downloader, Sources = sources, Job = job });
             TryStartQueuedDownloads();
         }
@@ -192,14 +192,16 @@ namespace VideoDownloader
 
                     if (sources != null)
                     {
-                        DownloadJobListBoxItem item = new DownloadJobListBoxItem();
-                        item.VideoTitle = scForm.VideoTitle;
-                        item.URL = downloader.SourceURL;
-                        item.VideoResolution = sources.Item1.Resolution;
-                        item.VideoFormat = sources.Item1.Extension;
-                        item.VideoDuration = Time.FromSeconds(scForm.Duration);
+                        var job = new DownloadJob
+                        {
+                            Title = scForm.VideoTitle,
+                            Url = downloader.SourceURL,
+                            Resolution = sources.Item1.Resolution,
+                            Format = sources.Item1.Extension,
+                            Duration = Time.FromSeconds(scForm.Duration)
+                        };
 
-                        EnqueueDownload(downloader, (sources.Item1, sources.Item2), item);
+                        EnqueueDownload(downloader, (sources.Item1, sources.Item2), job);
                         downloader = null;
                         tbLink.Clear();
 
@@ -395,14 +397,16 @@ namespace VideoDownloader
                     {
                         Cursor = Cursors.WaitCursor;
 
-                        DownloadJobListBoxItem item = new DownloadJobListBoxItem();
-                        item.VideoTitle = scForm.VideoTitle;
-                        item.URL = downloader.SourceURL;
-                        item.VideoResolution = scForm.SelectedSource.Item1.Resolution;
-                        item.VideoFormat = scForm.SelectedSource.Item1.Extension;
-                        item.VideoDuration = Time.FromSeconds(scForm.Duration);
+                        var job = new DownloadJob
+                        {
+                            Title = scForm.VideoTitle,
+                            Url = downloader.SourceURL,
+                            Resolution = scForm.SelectedSource.Item1.Resolution,
+                            Format = scForm.SelectedSource.Item1.Extension,
+                            Duration = Time.FromSeconds(scForm.Duration)
+                        };
 
-                        EnqueueDownload(downloader, scForm.SelectedSource, item);
+                        EnqueueDownload(downloader, scForm.SelectedSource, job);
                         downloader = null;
                         tbLink.Clear();
 
