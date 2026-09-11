@@ -15,26 +15,16 @@ namespace VideoDownloader
 
         private const int SB_HORZ = 0;
 
-        private sealed class PendingDownload
-        {
-            public required Downloader Downloader { get; init; }
-            public required (DataVideoSource video, DataAudioSource audio) Sources { get; init; }
-            public required DownloadJob Job { get; init; }
-        }
-
-        private readonly Queue<PendingDownload> _downloadQueue = new();
-
-        private int MaxConcurrentDownloads => tbMaxConcurrent.Value;
+        private readonly DownloadQueueManager _queue = new();
 
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool ShowScrollBar(IntPtr hWnd, int wBar, bool bShow);
 
         #region Jobs Information
-        private DownloadJobListBoxItem[] DownloadJobListBoxItems => flpJobs.Controls.Cast<DownloadJobListBoxItem>().ToArray();
-        protected int DownloadJobActiveCount => DownloadJobListBoxItems.Count(item => item.Job.State == DownloadingState.Downloading);
-        protected int DownloadJobCompletedCount => DownloadJobListBoxItems.Count(item => item.Job.State == DownloadingState.Completed);
-        protected int DownloadJobCount => DownloadJobListBoxItems.Length;
+        protected int DownloadJobActiveCount => _queue.ActiveCount;
+        protected int DownloadJobCompletedCount => _queue.CompletedCount;
+        protected int DownloadJobCount => _queue.TotalCount;
         #endregion
         #region Events
         protected event EventHandler DownloadJobCountChanged;
@@ -47,9 +37,13 @@ namespace VideoDownloader
             _Notifications = new Notifications();
             _Notifications.Items.CollectionChanged += Notifications_CollectionChanged;
 
+            _queue.Jobs.CollectionChanged += Queue_JobsChanged;
+            _queue.CountsChanged += (s, e) => DownloadJobCountChanged?.Invoke(this, EventArgs.Empty);
+
             DownloadJobCountChanged += FrmMain_DownloadJobCountChanged;
 
             tbMaxConcurrent.Value = Math.Clamp(Registry.GetMaxConcurrentDownloads(), tbMaxConcurrent.Minimum, tbMaxConcurrent.Maximum);
+            _queue.MaxConcurrentDownloads = tbMaxConcurrent.Value;
 
             cbLanguage.SelectedIndex = (int)Localization.Language;
             Localization.LanguageChanged += (s, e) => ApplyLocalization();
@@ -80,47 +74,18 @@ namespace VideoDownloader
 
         #region Download Queue
 
-        /// <summary>
-        /// Adds a job to the visible job list and to the pending-download queue, then attempts to start it
-        /// straight away if the simultaneous-download limit allows it.
-        /// </summary>
-        private void EnqueueDownload(Downloader downloader, (DataVideoSource video, DataAudioSource audio) sources, DownloadJob job)
+        private void Queue_JobsChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            flpJobs.Controls.Add(new DownloadJobListBoxItem(job));
-            _downloadQueue.Enqueue(new PendingDownload { Downloader = downloader, Sources = sources, Job = job });
-            TryStartQueuedDownloads();
-        }
-
-        /// <summary>
-        /// Starts as many queued downloads as the current simultaneous-download limit allows.
-        /// Called whenever the limit changes and whenever a download finishes, so raising the slider
-        /// immediately wakes up the queue and lowering it simply stops new downloads from starting.
-        /// </summary>
-        private void TryStartQueuedDownloads()
-        {
-            bool started = false;
-            while (DownloadJobActiveCount < MaxConcurrentDownloads && _downloadQueue.Count > 0)
+            if (InvokeRequired)
             {
-                var pending = _downloadQueue.Dequeue();
-                _ = RunQueuedDownloadAsync(pending);
-                started = true;
+                Invoke(() => Queue_JobsChanged(sender, e));
+                return;
             }
 
-            if (started)
-                FrmMain_DownloadJobCountChanged(this, EventArgs.Empty);
-        }
-
-        private async Task RunQueuedDownloadAsync(PendingDownload pending)
-        {
-            try
+            if (e.NewItems != null)
             {
-                await pending.Downloader.Download(pending.Sources, pending.Job);
-            }
-            finally
-            {
-                pending.Downloader.Dispose();
-                FrmMain_DownloadJobCountChanged(this, EventArgs.Empty);
-                TryStartQueuedDownloads();
+                foreach (DownloadJob job in e.NewItems)
+                    flpJobs.Controls.Add(new DownloadJobListBoxItem(job));
             }
         }
 
@@ -133,7 +98,7 @@ namespace VideoDownloader
         {
             UpdateMaxConcurrentLabel();
             Registry.SetMaxConcurrentDownloads(tbMaxConcurrent.Value);
-            TryStartQueuedDownloads();
+            _queue.MaxConcurrentDownloads = tbMaxConcurrent.Value;
         }
 
         #endregion
@@ -201,7 +166,7 @@ namespace VideoDownloader
                             Duration = Time.FromSeconds(scForm.Duration)
                         };
 
-                        EnqueueDownload(downloader, (sources.Item1, sources.Item2), job);
+                        _queue.Enqueue(downloader, (sources.Item1, sources.Item2), job);
                         downloader = null;
                         tbLink.Clear();
 
@@ -406,7 +371,7 @@ namespace VideoDownloader
                             Duration = Time.FromSeconds(scForm.Duration)
                         };
 
-                        EnqueueDownload(downloader, scForm.SelectedSource, job);
+                        _queue.Enqueue(downloader, scForm.SelectedSource, job);
                         downloader = null;
                         tbLink.Clear();
 
