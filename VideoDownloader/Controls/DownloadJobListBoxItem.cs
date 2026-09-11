@@ -11,6 +11,7 @@ namespace VideoDownloader.Controls
             InitializeComponent();
             Job = job;
             Job.PropertyChanged += Job_PropertyChanged;
+            Disposed += (s, e) => Job.PropertyChanged -= Job_PropertyChanged;
             RenderAll();
         }
 
@@ -33,7 +34,11 @@ namespace VideoDownloader.Controls
                 case nameof(DownloadJob.Speed): progressBar.Speed = Job.Speed; progressBar.Invalidate(); break;
                 case nameof(DownloadJob.ETA): progressBar.ETA = Job.ETA; progressBar.Invalidate(); break;
                 case nameof(DownloadJob.ProgressPercentage): progressBar.PreciseValue = Job.ProgressPercentage; break;
-                case nameof(DownloadJob.State): RenderState(); break;
+                case nameof(DownloadJob.State):
+                    RenderState();
+                    if (Job.State == DownloadingState.Canceled)
+                        Dispose();
+                    break;
             }
         }
 
