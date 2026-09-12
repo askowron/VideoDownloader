@@ -36,6 +36,19 @@ namespace VideoDownloader.Wpf.ViewModels
 
         public string MaxConcurrentLabel => string.Format(Core.Localization.T("Simultaneous downloads: {0}"), MaxConcurrentDownloads);
 
+        public AppLanguage[] AvailableLanguages { get; } = Enum.GetValues<AppLanguage>();
+
+        public AppLanguage Language
+        {
+            get => Core.Localization.Language;
+            set
+            {
+                if (Core.Localization.Language == value) return;
+                Core.Localization.Language = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainViewModel(IDialogService dialogService)
         {
             _dialogService = dialogService;
@@ -46,6 +59,15 @@ namespace VideoDownloader.Wpf.ViewModels
 
             _queue.CountsChanged += (s, e) => System.Windows.Application.Current.Dispatcher.Invoke(UpdateStatusText);
             UpdateStatusText();
+
+            // StatusText and MaxConcurrentLabel are plain computed VM properties (not
+            // {loc:Tr}-markup-extension-driven), so they need an explicit refresh when the
+            // language changes; TrExtension-bound XAML already self-refreshes (see Task 10).
+            Core.Localization.LanguageChanged += (s, e) =>
+            {
+                UpdateStatusText();
+                OnPropertyChanged(nameof(MaxConcurrentLabel));
+            };
 
             // Notifications.AddMessage's auto-dismiss timer removes items from a thread-pool
             // thread (see Notifications.cs / plan note on ObservableCollection thread affinity).

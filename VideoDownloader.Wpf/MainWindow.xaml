@@ -35,6 +35,7 @@
             <Slider Minimum="1" Maximum="20" Value="{Binding MaxConcurrentDownloads}" Width="200" TickFrequency="1" IsSnapToTickEnabled="True" />
             <Button Content="{loc:Tr 'ℹ️ About'}" Margin="16,0,0,0" Command="{Binding AboutCommand}" />
             <Button Content="{loc:Tr '☕ Buy me a coffee'}" Margin="8,0,0,0" Command="{Binding BuyCoffeeCommand}" />
+            <ComboBox ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding Language}" Width="100" Margin="16,0,0,0" />
         </StackPanel>
 
         <ItemsControl Grid.Row="3" ItemsSource="{Binding Notifications}" Margin="0,0,0,8" />
