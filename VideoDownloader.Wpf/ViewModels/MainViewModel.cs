@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -124,14 +126,16 @@ namespace VideoDownloader.Wpf.ViewModels
         }
 
         [RelayCommand]
-        private async Task Download()
+        private async Task Download() => await DownloadOne(interactive: true, preferred: null);
+
+        private async Task<(DataVideoSource video, DataAudioSource audio)?> DownloadOne(bool interactive, (DataVideoSource video, DataAudioSource audio)? preferred)
         {
             _notifications.ClearOldNotifications();
 
             if (DestinationPath.Length == 0 || !Directory.Exists(DestinationPath))
             {
                 _notifications.Warning(Core.Localization.T("Please select a valid destination path before downloading."));
-                return;
+                return null;
             }
 
             var downloader = new Downloader(_notifications)
@@ -142,11 +146,14 @@ namespace VideoDownloader.Wpf.ViewModels
 
             try
             {
-                var picked = await _dialogService.ShowSourceChooser(downloader);
+                (DataVideoSource video, DataAudioSource audio, string videoTitle, float duration)? picked = interactive
+                    ? await _dialogService.ShowSourceChooser(downloader)
+                    : await _dialogService.ChooseBestQuality(downloader, preferred);
+
                 if (picked == null)
                 {
                     downloader.Dispose();
-                    return;
+                    return null;
                 }
 
                 var job = new DownloadJob
@@ -160,11 +167,66 @@ namespace VideoDownloader.Wpf.ViewModels
 
                 _queue.Enqueue(downloader, (picked.Value.video, picked.Value.audio), job);
                 SourceUrl = string.Empty;
+
+                return (picked.Value.video, picked.Value.audio);
             }
             catch (Exception ex)
             {
                 _notifications.Error(Core.Errors.ParseErrorMessage(ex));
                 downloader.Dispose();
+                SourceUrl = string.Empty;
+                return null;
+            }
+        }
+
+        public async Task LoadMultipleAsync(IReadOnlyList<string> lines)
+        {
+            if (lines.Count < 2 || System.Windows.MessageBox.Show(
+                string.Format(Core.Localization.T("Found {0} urls! Are you sure you want to download them all?"), lines.Count),
+                Core.Localization.T("Download"), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                (DataVideoSource video, DataAudioSource audio)? preferred = null;
+                bool isFirst = true;
+
+                foreach (var line in lines)
+                {
+                    SourceUrl = line;
+                    var result = await DownloadOne(isFirst, preferred);
+
+                    if (isFirst)
+                    {
+                        if (result == null) break;
+                        preferred = result;
+                        isFirst = false;
+                    }
+                }
+            }
+        }
+
+        [RelayCommand]
+        private async Task LoadFile()
+        {
+            var dialog = new Microsoft.Win32.OpenFileDialog { Filter = "Text file (*.txt)|*.txt", CheckFileExists = true, Multiselect = false };
+            if (dialog.ShowDialog() == true)
+            {
+                await LoadMultipleAsync(File.ReadAllLines(dialog.FileName));
+            }
+        }
+
+        public async Task PasteClipboardUrlAsync()
+        {
+            string clipboardText = System.Windows.Clipboard.GetText();
+            if (SourceUrl.Length == 0 && !string.IsNullOrEmpty(clipboardText))
+            {
+                if (Helper.URL.Verify(clipboardText))
+                {
+                    SourceUrl = clipboardText;
+                }
+                else if (clipboardText.Split('\n').Length > 1)
+                {
+                    var lines = clipboardText.Split('\n').Where(Helper.URL.Verify).ToArray();
+                    await LoadMultipleAsync(lines);
+                }
             }
         }
 

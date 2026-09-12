@@ -55,6 +55,7 @@ namespace VideoDownloader.Core
             ["Destination (path)"] = "Miejsce docelowe (ścieżka)",
             ["Download"] = "Pobierz",
             ["Browse"] = "Przeglądaj",
+            ["📄 Load"] = "📄 Wczytaj",
             ["☕ Buy me a coffee"] = "☕ Postaw mi kawę",
             ["ℹ️ About"] = "ℹ️ O programie",
             ["Simultaneous downloads: {0}"] = "Jednoczesne pobierania: {0}",

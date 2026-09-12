@@ -15,9 +15,9 @@ namespace VideoDownloader.Wpf
             DataContext = _viewModel;
         }
 
-        private void Window_Activated(object sender, EventArgs e)
+        private async void Window_Activated(object sender, EventArgs e)
         {
-            // Clipboard-paste-on-activate is wired in Task 15.
+            await _viewModel.PasteClipboardUrlAsync();
         }
 
         private void JobList_DragEnter(object sender, System.Windows.DragEventArgs e)
@@ -25,9 +25,14 @@ namespace VideoDownloader.Wpf
             e.Effects = e.Data.GetDataPresent(System.Windows.DataFormats.Text) ? System.Windows.DragDropEffects.Copy : System.Windows.DragDropEffects.None;
         }
 
-        private void JobList_Drop(object sender, System.Windows.DragEventArgs e)
+        private async void JobList_Drop(object sender, System.Windows.DragEventArgs e)
         {
-            // Multi-URL drag-drop is wired in Task 15.
+            if (e.Data.GetDataPresent(System.Windows.DataFormats.Text))
+            {
+                string[] lines = ((string)e.Data.GetData(System.Windows.DataFormats.Text))
+                    .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                await _viewModel.LoadMultipleAsync(lines);
+            }
         }
     }
 }
