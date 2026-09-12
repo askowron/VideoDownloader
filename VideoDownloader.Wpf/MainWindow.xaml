@@ -4,7 +4,7 @@
         xmlns:loc="clr-namespace:VideoDownloader.Wpf.Localization"
         Title="VideoDownloader" Height="650" Width="950" MinWidth="600"
         Background="{StaticResource BackgroundBrush}"
-        Activated="Window_Activated">
+        Activated="Window_Activated" Loaded="Window_Loaded">
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />

@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(SolutionDir)ExternalLib\*.exe&quot; &quot;$(TargetDir)&quot; /Y /I" />
+    <Exec Command="xcopy &quot;$(MSBuildThisFileDirectory)..\ExternalLib\*.exe&quot; &quot;$(TargetDir)&quot; /Y /I" />
   </Target>
 
 </Project>

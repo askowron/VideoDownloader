@@ -20,6 +20,11 @@ namespace VideoDownloader.Wpf
             await _viewModel.PasteClipboardUrlAsync();
         }
 
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            await _viewModel.CheckForYtDlpUpdateAsync();
+        }
+
         private void JobList_DragEnter(object sender, System.Windows.DragEventArgs e)
         {
             e.Effects = e.Data.GetDataPresent(System.Windows.DataFormats.Text) ? System.Windows.DragDropEffects.Copy : System.Windows.DragDropEffects.None;

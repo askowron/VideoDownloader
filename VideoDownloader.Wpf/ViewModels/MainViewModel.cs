@@ -230,6 +230,24 @@ namespace VideoDownloader.Wpf.ViewModels
             }
         }
 
+        public async Task CheckForYtDlpUpdateAsync()
+        {
+            try
+            {
+                string result = await YtDlpUpdater.UpdateAsync();
+                if (result.Length == 0) return;
+
+                if (result.Contains("up to date", StringComparison.OrdinalIgnoreCase))
+                    _notifications.Info($"yt-dlp: {result}");
+                else
+                    _notifications.Success($"yt-dlp: {result}");
+            }
+            catch (Exception ex)
+            {
+                _notifications.Warning($"{Core.Localization.T("Could not update yt-dlp:")} {Core.Errors.ParseErrorMessage(ex)}");
+            }
+        }
+
         internal DownloadQueueManager Queue => _queue;
         internal Notifications NotificationsService => _notifications;
     }
