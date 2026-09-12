@@ -1,0 +1,29 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:core="clr-namespace:VideoDownloader.Core;assembly=VideoDownloader.Core">
+
+    <DataTemplate DataType="{x:Type core:NotificationItem}">
+        <Border CornerRadius="4" Padding="10,6" Margin="0,0,0,4">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Type}" Value="Info">
+                            <Setter Property="Background" Value="LightBlue" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Type}" Value="Warning">
+                            <Setter Property="Background" Value="Khaki" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Type}" Value="Error">
+                            <Setter Property="Background" Value="LightCoral" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Type}" Value="Success">
+                            <Setter Property="Background" Value="LightGreen" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+        </Border>
+    </DataTemplate>
+
+</ResourceDictionary>

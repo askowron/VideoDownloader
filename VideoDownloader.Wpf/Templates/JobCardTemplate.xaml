@@ -1,0 +1,48 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                     xmlns:core="clr-namespace:VideoDownloader.Core;assembly=VideoDownloader.Core"
+                     xmlns:loc="clr-namespace:VideoDownloader.Wpf.Localization">
+
+    <DataTemplate DataType="{x:Type core:DownloadJob}">
+        <Border Style="{StaticResource CardStyle}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Url}" Foreground="Gray" FontSize="11" TextTrimming="CharacterEllipsis" />
+                    <Grid Height="28" Margin="0,6,0,0">
+                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercentage, Mode=OneWay}" />
+                        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="11">
+                            <Run Text="{Binding ProgressPercentage, StringFormat={}{0:F1}%, Mode=OneWay}" />
+                            <Run Text=" " />
+                            <Run Text="{Binding Speed, Mode=OneWay}" />
+                            <Run Text=" " />
+                            <Run Text="{Binding ETA, Mode=OneWay}" />
+                        </TextBlock>
+                    </Grid>
+                </StackPanel>
+                <Button Grid.Column="1" Content="✕" Margin="8,0,0,0" VerticalAlignment="Top"
+                        Command="{Binding DataContext.CancelJobCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        CommandParameter="{Binding}">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding State}" Value="Downloading">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding State}" Value="Waiting">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+</ResourceDictionary>
