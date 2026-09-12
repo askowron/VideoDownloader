@@ -50,7 +50,10 @@ namespace VideoDownloader.Wpf.ViewModels
             // WinForms marshals this in its CollectionChanged subscriber via Control.Invoke;
             // this is the WPF-side equivalent so the bound ItemsControl doesn't throw
             // NotSupportedException when a notification auto-dismisses off the UI thread.
-            System.Windows.Data.BindingOperations.EnableCollectionSynchronization(_notifications.Items, new object());
+            // Pass Notifications.SyncRoot (not a throwaway object) so this actually agrees with
+            // the lock Notifications itself takes around every Items mutation - that's what
+            // makes the collection genuinely race-free, not just quiet on WPF's read side.
+            System.Windows.Data.BindingOperations.EnableCollectionSynchronization(_notifications.Items, _notifications.SyncRoot);
         }
 
         partial void OnMaxConcurrentDownloadsChanged(int value)
