@@ -16,6 +16,8 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoDownloader.Core", "VideoDownloader.Core\VideoDownloader.Core.csproj", "{A01AF3B7-95CC-4DFF-A61F-9C08888D23E3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VideoDownloader.Wpf", "VideoDownloader.Wpf\VideoDownloader.Wpf.csproj", "{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,18 @@ Global
 		{A01AF3B7-95CC-4DFF-A61F-9C08888D23E3}.Release|x64.Build.0 = Release|Any CPU
 		{A01AF3B7-95CC-4DFF-A61F-9C08888D23E3}.Release|x86.ActiveCfg = Release|Any CPU
 		{A01AF3B7-95CC-4DFF-A61F-9C08888D23E3}.Release|x86.Build.0 = Release|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Debug|x64.Build.0 = Debug|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Debug|x86.Build.0 = Debug|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Release|x64.ActiveCfg = Release|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Release|x64.Build.0 = Release|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Release|x86.ActiveCfg = Release|Any CPU
+		{9EF1D5EC-FE8B-4A29-8C23-3744F29DD26B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
