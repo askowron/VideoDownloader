@@ -31,6 +31,8 @@ namespace VideoDownloader.Wpf.ViewModels
         public ObservableCollection<DownloadJob> Jobs => _queue.Jobs;
         public ObservableCollection<NotificationItem> Notifications => _notifications.Items;
 
+        public string MaxConcurrentLabel => string.Format(Core.Localization.T("Simultaneous downloads: {0}"), MaxConcurrentDownloads);
+
         public MainViewModel(IDialogService dialogService)
         {
             _dialogService = dialogService;
@@ -47,6 +49,7 @@ namespace VideoDownloader.Wpf.ViewModels
         {
             Registry.SetMaxConcurrentDownloads(value);
             _queue.MaxConcurrentDownloads = value;
+            OnPropertyChanged(nameof(MaxConcurrentLabel));
         }
 
         private void UpdateStatusText()

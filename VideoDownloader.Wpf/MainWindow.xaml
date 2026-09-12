@@ -30,7 +30,7 @@
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
-            <TextBlock Text="{Binding MaxConcurrentDownloads, StringFormat='Simultaneous downloads: {0}'}" VerticalAlignment="Center" Width="200" />
+            <TextBlock Text="{Binding MaxConcurrentLabel}" VerticalAlignment="Center" Width="200" />
             <Slider Minimum="1" Maximum="20" Value="{Binding MaxConcurrentDownloads}" Width="200" TickFrequency="1" IsSnapToTickEnabled="True" />
             <Button Content="{loc:Tr 'ℹ️ About'}" Margin="16,0,0,0" Command="{Binding AboutCommand}" />
             <Button Content="{loc:Tr '☕ Buy me a coffee'}" Margin="8,0,0,0" Command="{Binding BuyCoffeeCommand}" />
