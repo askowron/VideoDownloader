@@ -29,7 +29,7 @@
                         CommandParameter="{Binding}">
                     <Button.Style>
                         <Style TargetType="Button">
-                            <Setter Property="Visibility" Value="Visible" />
+                            <Setter Property="Visibility" Value="Collapsed" />
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding State}" Value="Downloading">
                                     <Setter Property="Visibility" Value="Visible" />
