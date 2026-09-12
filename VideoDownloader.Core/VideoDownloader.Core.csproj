@@ -4,6 +4,8 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <Authors>APPIT</Authors>
+    <AssemblyTitle>VideoDownloader</AssemblyTitle>
   </PropertyGroup>
 
   <ItemGroup>
