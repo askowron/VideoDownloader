@@ -1,0 +1,22 @@
+<Window x:Class="VideoDownloader.Wpf.Views.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:VideoDownloader.Wpf.Localization"
+        Title="{loc:Tr 'About VideoDownloader'}" Height="260" Width="380"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
+        Background="{StaticResource BackgroundBrush}">
+    <StackPanel Margin="16">
+        <TextBlock Text="{Binding Version}" Margin="0,0,0,4" />
+        <TextBlock Text="{Binding BuildDate}" Margin="0,0,0,4" />
+        <TextBlock Text="{Binding Author}" Margin="0,0,0,12" />
+        <TextBlock Text="{loc:Tr 'Uses the following tools:'}" Margin="0,0,0,4" />
+        <TextBlock>
+            <Hyperlink Command="{Binding OpenYtDlpCommand}">yt-dlp</Hyperlink>
+        </TextBlock>
+        <TextBlock>
+            <Hyperlink Command="{Binding OpenFFmpegCommand}">FFmpeg</Hyperlink>
+        </TextBlock>
+        <Button Content="{loc:Tr 'Close'}" Style="{StaticResource PrimaryButtonStyle}"
+                HorizontalAlignment="Right" Margin="0,16,0,0" Click="Close_Click" />
+    </StackPanel>
+</Window>

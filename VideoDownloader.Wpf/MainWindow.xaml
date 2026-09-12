@@ -5,7 +5,7 @@
         Title="VideoDownloader" Height="600" Width="900"
         Background="{StaticResource BackgroundBrush}">
     <Grid Margin="16">
-        <Button Content="{loc:Tr 'Download'}" Style="{StaticResource PrimaryButtonStyle}"
-                HorizontalAlignment="Left" VerticalAlignment="Top" />
+        <Button Content="{loc:Tr 'ℹ️ About'}" Style="{StaticResource PrimaryButtonStyle}"
+                HorizontalAlignment="Left" VerticalAlignment="Top" Click="About_Click" />
     </Grid>
 </Window>
