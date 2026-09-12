@@ -35,7 +35,13 @@ namespace VideoDownloader.Core
 
         public int ActiveCount => Jobs.Count(j => j.State == DownloadingState.Downloading);
         public int CompletedCount => Jobs.Count(j => j.State == DownloadingState.Completed);
-        public int TotalCount => Jobs.Count;
+
+        // Canceled jobs are excluded here (but stay in Jobs) to match pre-migration behavior: a
+        // canceled WinForms DownloadJobListBoxItem used to Dispose() itself, which removed it from
+        // flpJobs.Controls and thus from the old Controls.Length-based total. Jobs itself keeps the
+        // entry (rather than removing it) so a canceled job can still be rendered - e.g. a future
+        // WPF job card showing a "Canceled" state - without corrupting the pending-queue bookkeeping.
+        public int TotalCount => Jobs.Count(j => j.State != DownloadingState.Canceled);
 
         public void Enqueue(Downloader downloader, (DataVideoSource video, DataAudioSource audio) sources, DownloadJob job)
         {
