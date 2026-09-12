@@ -5,6 +5,7 @@ using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using VideoDownloader.Core;
+using VideoDownloader.Core.Tools;
 using VideoDownloader.Core.Windows;
 using VideoDownloader.Wpf.Services;
 
@@ -43,6 +44,13 @@ namespace VideoDownloader.Wpf.ViewModels
 
             _queue.CountsChanged += (s, e) => System.Windows.Application.Current.Dispatcher.Invoke(UpdateStatusText);
             UpdateStatusText();
+
+            // Notifications.AddMessage's auto-dismiss timer removes items from a thread-pool
+            // thread (see Notifications.cs / plan note on ObservableCollection thread affinity).
+            // WinForms marshals this in its CollectionChanged subscriber via Control.Invoke;
+            // this is the WPF-side equivalent so the bound ItemsControl doesn't throw
+            // NotSupportedException when a notification auto-dismisses off the UI thread.
+            System.Windows.Data.BindingOperations.EnableCollectionSynchronization(_notifications.Items, new object());
         }
 
         partial void OnMaxConcurrentDownloadsChanged(int value)
@@ -101,8 +109,59 @@ namespace VideoDownloader.Wpf.ViewModels
             if (job.State == DownloadingState.Downloading &&
                 System.Windows.MessageBox.Show(Core.Localization.T("Are you sure you want to cancel downloading?"), Core.Localization.T("Downloading"), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                job.CancellationTokenSource?.Cancel();
-                job.State = DownloadingState.Canceled;
+                // MessageBox.Show is modal but still pumps the dispatcher, so the download can
+                // finish (and dispose its CancellationTokenSource) while the confirmation is up.
+                // Re-check the state before touching the possibly-disposed token source.
+                if (job.State == DownloadingState.Downloading)
+                {
+                    job.CancellationTokenSource?.Cancel();
+                    job.State = DownloadingState.Canceled;
+                }
+            }
+        }
+
+        [RelayCommand]
+        private async Task Download()
+        {
+            _notifications.ClearOldNotifications();
+
+            if (DestinationPath.Length == 0 || !Directory.Exists(DestinationPath))
+            {
+                _notifications.Warning(Core.Localization.T("Please select a valid destination path before downloading."));
+                return;
+            }
+
+            var downloader = new Downloader(_notifications)
+            {
+                SourceURL = SourceUrl,
+                DestinationPath = DestinationPath
+            };
+
+            try
+            {
+                var picked = await _dialogService.ShowSourceChooser(downloader);
+                if (picked == null)
+                {
+                    downloader.Dispose();
+                    return;
+                }
+
+                var job = new DownloadJob
+                {
+                    Title = picked.Value.videoTitle,
+                    Url = downloader.SourceURL,
+                    Resolution = picked.Value.video.Resolution,
+                    Format = picked.Value.video.Extension,
+                    Duration = Time.FromSeconds(picked.Value.duration)
+                };
+
+                _queue.Enqueue(downloader, (picked.Value.video, picked.Value.audio), job);
+                SourceUrl = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                _notifications.Error(Core.Errors.ParseErrorMessage(ex));
+                downloader.Dispose();
             }
         }
 
