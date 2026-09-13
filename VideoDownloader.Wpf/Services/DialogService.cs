@@ -18,7 +18,16 @@ namespace VideoDownloader.Wpf.Services
         public async Task<(DataVideoSource video, DataAudioSource audio, string videoTitle, float duration)?> ShowSourceChooser(Downloader downloader)
         {
             var viewModel = new SourceChooserViewModel(downloader);
-            await viewModel.LoadAsync();
+
+            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+            try
+            {
+                await viewModel.LoadAsync();
+            }
+            finally
+            {
+                System.Windows.Input.Mouse.OverrideCursor = null;
+            }
 
             var window = new SourceChooserWindow(viewModel);
             window.Owner = System.Windows.Application.Current.MainWindow;
@@ -32,7 +41,17 @@ namespace VideoDownloader.Wpf.Services
 
         public async Task<(DataVideoSource video, DataAudioSource audio, string videoTitle, float duration)?> ChooseBestQuality(Downloader downloader, (DataVideoSource video, DataAudioSource audio)? preferred)
         {
-            var sources = await downloader.FetchSources();
+            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+            DataSource sources;
+            try
+            {
+                sources = await downloader.FetchSources();
+            }
+            finally
+            {
+                System.Windows.Input.Mouse.OverrideCursor = null;
+            }
+
             if (sources == null || sources.VideoSources.Count == 0 || sources.AudioSources.Count == 0)
                 throw new Exception(Core.Localization.T("No downloadable video/audio formats found."));
 

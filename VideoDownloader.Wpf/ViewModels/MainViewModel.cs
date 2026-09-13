@@ -168,18 +168,9 @@ namespace VideoDownloader.Wpf.ViewModels
 
             try
             {
-                (DataVideoSource video, DataAudioSource audio, string videoTitle, float duration)? picked;
-                System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-                try
-                {
-                    picked = interactive
-                        ? await _dialogService.ShowSourceChooser(downloader)
-                        : await _dialogService.ChooseBestQuality(downloader, preferred);
-                }
-                finally
-                {
-                    System.Windows.Input.Mouse.OverrideCursor = null;
-                }
+                (DataVideoSource video, DataAudioSource audio, string videoTitle, float duration)? picked = interactive
+                    ? await _dialogService.ShowSourceChooser(downloader)
+                    : await _dialogService.ChooseBestQuality(downloader, preferred);
 
                 if (picked == null)
                 {
