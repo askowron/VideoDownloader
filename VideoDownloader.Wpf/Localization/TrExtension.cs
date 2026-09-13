@@ -23,8 +23,20 @@ namespace VideoDownloader.Wpf.Localization
 
             if (target.TargetProperty is System.Windows.DependencyProperty dp)
             {
-                void Refresh(object? s, EventArgs e) =>
-                    targetElement.Dispatcher.Invoke(() => targetElement.SetValue(dp, global::VideoDownloader.Core.Localization.T(Key)));
+                var weakTarget = new WeakReference<System.Windows.DependencyObject>(targetElement);
+                string key = Key;
+
+                void Refresh(object? s, EventArgs e)
+                {
+                    if (weakTarget.TryGetTarget(out var element))
+                    {
+                        element.Dispatcher.Invoke(() => element.SetValue(dp, global::VideoDownloader.Core.Localization.T(key)));
+                    }
+                    else
+                    {
+                        global::VideoDownloader.Core.Localization.LanguageChanged -= Refresh;
+                    }
+                }
 
                 global::VideoDownloader.Core.Localization.LanguageChanged += Refresh;
             }

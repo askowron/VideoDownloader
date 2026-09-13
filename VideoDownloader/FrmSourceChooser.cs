@@ -98,8 +98,8 @@ namespace VideoDownloader
                 VideoTitle = sources.VideoTitle;
                 Duration = sources.Duration;
 
-                var video = MatchVideo(sources.VideoSources, preferredVideo) ?? sources.VideoSources.LastOrDefault();
-                var audio = MatchAudio(sources.AudioSources, preferredAudio) ?? sources.AudioSources.FirstOrDefault();
+                var video = QualityMatcher.MatchVideo(sources.VideoSources, preferredVideo) ?? sources.VideoSources.LastOrDefault();
+                var audio = QualityMatcher.MatchAudio(sources.AudioSources, preferredAudio) ?? sources.AudioSources.FirstOrDefault();
 
                 return new Tuple<DataVideoSource, DataAudioSource>(video, audio);
             }
@@ -107,24 +107,6 @@ namespace VideoDownloader
             {
                 Cursor = Cursors.Default;
             }
-        }
-
-        private static DataVideoSource MatchVideo(List<DataVideoSource> sources, DataVideoSource preferred)
-        {
-            if (preferred == null)
-                return null;
-
-            return sources.FirstOrDefault(s => s.Resolution == preferred.Resolution && s.Extension == preferred.Extension)
-                ?? sources.FirstOrDefault(s => s.Resolution == preferred.Resolution);
-        }
-
-        private static DataAudioSource MatchAudio(List<DataAudioSource> sources, DataAudioSource preferred)
-        {
-            if (preferred == null)
-                return null;
-
-            return sources.FirstOrDefault(s => s.Language == preferred.Language && s.Extension == preferred.Extension)
-                ?? sources.FirstOrDefault(s => s.Language == preferred.Language);
         }
 
         public (DataVideoSource, DataAudioSource) SelectedSource

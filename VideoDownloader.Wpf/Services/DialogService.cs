@@ -36,27 +36,13 @@ namespace VideoDownloader.Wpf.Services
             if (sources == null || sources.VideoSources.Count == 0 || sources.AudioSources.Count == 0)
                 throw new Exception(Core.Localization.T("No downloadable video/audio formats found."));
 
-            var video = MatchVideo(sources.VideoSources, preferred?.video) ?? sources.VideoSources.LastOrDefault();
-            var audio = MatchAudio(sources.AudioSources, preferred?.audio) ?? sources.AudioSources.FirstOrDefault();
+            var video = QualityMatcher.MatchVideo(sources.VideoSources, preferred?.video) ?? sources.VideoSources.LastOrDefault();
+            var audio = QualityMatcher.MatchAudio(sources.AudioSources, preferred?.audio) ?? sources.AudioSources.FirstOrDefault();
 
             if (video == null || audio == null)
                 return null;
 
             return (video, audio, sources.VideoTitle, sources.Duration);
-        }
-
-        private static DataVideoSource? MatchVideo(List<DataVideoSource> sources, DataVideoSource? preferred)
-        {
-            if (preferred == null) return null;
-            return sources.FirstOrDefault(s => s.Resolution == preferred.Resolution && s.Extension == preferred.Extension)
-                ?? sources.FirstOrDefault(s => s.Resolution == preferred.Resolution);
-        }
-
-        private static DataAudioSource? MatchAudio(List<DataAudioSource> sources, DataAudioSource? preferred)
-        {
-            if (preferred == null) return null;
-            return sources.FirstOrDefault(s => s.Language == preferred.Language && s.Extension == preferred.Extension)
-                ?? sources.FirstOrDefault(s => s.Language == preferred.Language);
         }
     }
 }
