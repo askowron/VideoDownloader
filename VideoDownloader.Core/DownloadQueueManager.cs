@@ -48,6 +48,14 @@ namespace VideoDownloader.Core
             Jobs.Add(job);
             _pending.Enqueue(new PendingDownload { Downloader = downloader, Sources = sources, Job = job });
             TryStartQueuedDownloads();
+
+            // TryStartQueuedDownloads() only raises CountsChanged when it actually starts a
+            // download, which it won't if the concurrency limit is already saturated - but
+            // TotalCount (Jobs.Count) still changed from the Add above, so listeners relying
+            // solely on CountsChanged (e.g. WPF's MainViewModel.StatusText) would otherwise miss
+            // this enqueue and undercount until some other job's state next changes. Always raise
+            // it here so every consumer sees the new total immediately.
+            CountsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void TryStartQueuedDownloads()

@@ -237,7 +237,20 @@ namespace VideoDownloader.Wpf.ViewModels
 
         public async Task PasteClipboardUrlAsync()
         {
-            string clipboardText = System.Windows.Clipboard.GetText();
+            // Reading the clipboard on every window activation is best-effort: the clipboard can
+            // transiently fail to open (e.g. another app briefly holding it, or a locked-down
+            // clipboard in some environments), which must not crash the app or nag the user with
+            // an error for something they didn't explicitly ask for - just skip the auto-fill.
+            string clipboardText;
+            try
+            {
+                clipboardText = System.Windows.Clipboard.GetText();
+            }
+            catch (System.Runtime.InteropServices.COMException)
+            {
+                return;
+            }
+
             if (SourceUrl.Length == 0 && !string.IsNullOrEmpty(clipboardText))
             {
                 if (Helper.URL.Verify(clipboardText))

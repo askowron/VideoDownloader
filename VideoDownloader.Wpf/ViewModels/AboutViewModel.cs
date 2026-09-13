@@ -13,7 +13,9 @@ namespace VideoDownloader.Wpf.ViewModels
         public string Author => $"{Core.Localization.T("Author:")} Adam Skowroński";
 
         private static string GetVersion() =>
-            Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "0.0.0";
+            Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+            ?? Assembly.GetExecutingAssembly().GetName().Version?.ToString()
+            ?? "0.0.0";
 
         private static DateTime GetBuildDate() =>
             File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location);

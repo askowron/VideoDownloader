@@ -8,7 +8,10 @@
     <StackPanel Margin="16">
         <TextBlock Text="{Binding Version}" Margin="0,0,0,4" />
         <TextBlock Text="{Binding BuildDate}" Margin="0,0,0,4" />
-        <TextBlock Text="{Binding Author}" Margin="0,0,0,12" />
+        <TextBlock Text="{Binding Author}" Margin="0,0,0,4" />
+        <TextBlock Margin="0,0,0,12">
+            <Hyperlink Command="{Binding OpenEmailCommand}">info@appit.pl</Hyperlink>
+        </TextBlock>
         <TextBlock Text="{loc:Tr 'Uses the following tools:'}" Margin="0,0,0,4" />
         <TextBlock>
             <Hyperlink Command="{Binding OpenYtDlpCommand}">yt-dlp</Hyperlink>
