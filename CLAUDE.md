@@ -9,6 +9,8 @@ A Windows desktop app (.NET 8, WinForms) for downloading videos via [yt-dlp](htt
 ## Solution structure
 
 - **VideoDownloader** (`net8.0-windows`) — the WinForms application. This is where almost all work happens.
+- **VideoDownloader.Core** (`net8.0`) — shared, UI-framework-agnostic class library: download/queue/notification logic (`Downloader`, `DownloadJob`, `DownloadQueueManager`, `Notifications`), localization, registry persistence, error parsing. Referenced by both `VideoDownloader` and `VideoDownloader.Wpf`.
+- **VideoDownloader.Wpf** (`net8.0-windows`) — WPF front end (MVVM via CommunityToolkit.Mvvm), functionally equivalent to `VideoDownloader`. No installer yet — `VideoDownloader.Setup` still packages only the WinForms app.
 - **FFmpegBuild** — native Makefile-style vcxproj that cross-compiles a stripped-down `ffmpeg.exe` from source via MSYS2/mingw and drops it into `ExternalLib\ffmpeg.exe`. Not part of the default solution build (avoids requiring MSYS2 on every dev machine) — build it manually only when FFmpeg needs to change. See `FFmpegBuild/README.md` (Polish) for details.
 - **VideoDownloader.Setup** — WiX installer project producing the MSI package.
 - **ExternalLib** — third-party executables (`yt-dlp.exe`, `ffmpeg.exe`) copied into the app's build output by a `PostBuild` xcopy target in `VideoDownloader.csproj`.
@@ -23,6 +25,9 @@ dotnet build VideoDownloader\VideoDownloader.csproj -c Release
 
 # Run for development
 dotnet run --project VideoDownloader
+
+# Run the WPF app
+dotnet run --project VideoDownloader.Wpf
 ```
 
 Building the full solution in Visual Studio also builds `VideoDownloader.Setup` (requires the WiX Toolset extension); `FFmpegBuild` is excluded and must be built manually if `ffmpeg.exe` needs regenerating.
