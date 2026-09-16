@@ -8,10 +8,10 @@ A Windows desktop app (.NET 8, WPF) for downloading videos via [yt-dlp](https://
 
 ## Solution structure
 
-- **VideoDownloader.Wpf** (`net8.0-windows`) — the WPF application (MVVM via CommunityToolkit.Mvvm). This is where almost all work happens. No installer yet — `VideoDownloader.Setup` still needs to be pointed at it.
+- **VideoDownloader.Wpf** (`net8.0-windows`) — the WPF application (MVVM via CommunityToolkit.Mvvm). This is where almost all work happens.
 - **VideoDownloader.Core** (`net8.0-windows`) — shared, UI-framework-agnostic class library: download/queue/notification logic (`Downloader`, `DownloadJob`, `DownloadQueueManager`, `Notifications`, `QualityMatcher`), localization, registry persistence, error parsing. Referenced by `VideoDownloader.Wpf`.
 - **FFmpegBuild** — native Makefile-style vcxproj that cross-compiles a stripped-down `ffmpeg.exe` from source via MSYS2/mingw and drops it into `ExternalLib\ffmpeg.exe`. Not part of the default solution build (avoids requiring MSYS2 on every dev machine) — build it manually only when FFmpeg needs to change. See `FFmpegBuild/README.md` (Polish) for details.
-- **VideoDownloader.Setup** — WiX installer project producing the MSI package.
+- **Setup** — legacy Visual Studio Installer project (`Setup.vdproj`) producing the MSI package. Not WiX-based despite older docs/plans referring to it as `VideoDownloader.Setup`; slated to be replaced by a WiX installer eventually.
 - **ExternalLib** — third-party executables (`yt-dlp.exe`, `ffmpeg.exe`) copied into the app's build output by a `PostBuild` xcopy target in `VideoDownloader.Wpf.csproj`.
 
 There is no automated test suite in this repo.
@@ -26,7 +26,7 @@ dotnet build VideoDownloader.Wpf\VideoDownloader.Wpf.csproj -c Release
 dotnet run --project VideoDownloader.Wpf
 ```
 
-Building the full solution in Visual Studio also builds `VideoDownloader.Setup` (requires the WiX Toolset extension); `FFmpegBuild` is excluded and must be built manually if `ffmpeg.exe` needs regenerating.
+Building the full solution in Visual Studio also builds `Setup` (requires the Visual Studio Installer Projects extension); `FFmpegBuild` is excluded and must be built manually if `ffmpeg.exe` needs regenerating.
 
 ## Architecture
 

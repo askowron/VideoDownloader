@@ -16,14 +16,14 @@ A Windows desktop app (.NET 8, WPF) for downloading videos via [yt-dlp](https://
 - **VideoDownloader.Wpf** — the WPF application (`net8.0-windows`). Uses [YoutubeDLSharp](https://www.nuget.org/packages/YoutubeDLSharp) to drive `yt-dlp.exe`.
 - **VideoDownloader.Core** — shared, UI-framework-agnostic library: download/queue logic, localization, registry persistence, error parsing, and the `yt-dlp -U` self-updater (`Tools/YtDlpUpdater.cs`).
 - **FFmpegBuild** — native (vcxproj) project that produces the FFmpeg binaries bundled with the app. Not part of the default solution build; see `FFmpegBuild/README.md` for how to (re)build it.
-- **VideoDownloader.Setup** — WiX installer project producing the MSI package.
+- **Setup** — legacy Visual Studio Installer project (`Setup.vdproj`) producing the MSI package. Slated to be replaced by a WiX-based installer.
 - **ExternalLib** — third-party executables (`yt-dlp.exe`, `ffmpeg.exe`) copied into the build output on `PostBuild`.
 
 ## Requirements
 
 - Windows
 - .NET 8 SDK
-- Visual Studio 2022 (17.14+) with the WiX Toolset extension for building the installer
+- Visual Studio 2022 (17.14+) with the Visual Studio Installer Projects extension for building the installer
 
 ## Building
 
