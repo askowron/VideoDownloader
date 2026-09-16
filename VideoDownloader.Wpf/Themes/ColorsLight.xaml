@@ -4,9 +4,15 @@
     <Color x:Key="BackgroundColor">#FAFAFA</Color>
     <Color x:Key="CardColor">#FFFFFF</Color>
     <Color x:Key="BorderColor">#E2E2E2</Color>
+    <Color x:Key="HoverColor">#E8E8E8</Color>
+    <Color x:Key="ForegroundColor">#1A1A1A</Color>
+    <Color x:Key="SubtleForegroundColor">#6E6E6E</Color>
 
     <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}" />
     <SolidColorBrush x:Key="CardBrush" Color="{StaticResource CardColor}" />
     <SolidColorBrush x:Key="BorderBrush2" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
+    <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}" />
+    <SolidColorBrush x:Key="SubtleForegroundBrush" Color="{StaticResource SubtleForegroundColor}" />
 </ResourceDictionary>

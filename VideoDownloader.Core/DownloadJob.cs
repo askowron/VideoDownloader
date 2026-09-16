@@ -44,10 +44,20 @@ namespace VideoDownloader.Core
 
         public CancellationTokenSource? CancellationTokenSource { get; set; }
 
+        /// <summary>UTC timestamp of the most recent <see cref="DownloadBegin"/> call. Used to
+        /// compute the history entry's duration once the job finishes.</summary>
+        public DateTime? StartedAtUtc { get; private set; }
+
+        /// <summary>Set alongside <see cref="DownloadingState.Failed"/> in
+        /// <see cref="Downloader.Download"/>; carries the parsed error message into the
+        /// persisted history entry.</summary>
+        public string? ErrorMessage { get; set; }
+
         public void DownloadBegin()
         {
             CancellationTokenSource?.Dispose();
             CancellationTokenSource = new CancellationTokenSource();
+            StartedAtUtc = DateTime.UtcNow;
             State = DownloadingState.Downloading;
         }
 

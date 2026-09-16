@@ -135,7 +135,8 @@ namespace VideoDownloader.Core
             catch (Exception ex)
             {
                 job.State = DownloadingState.Failed;
-                _Notifications.Error(string.Format(Localization.T("Download failed ({0}): {1}"), job.Title, Errors.ParseErrorMessage(ex)));
+                job.ErrorMessage = Errors.ParseErrorMessage(ex);
+                _Notifications.Error(string.Format(Localization.T("Download failed ({0}): {1}"), job.Title, job.ErrorMessage));
             }
             finally
             {

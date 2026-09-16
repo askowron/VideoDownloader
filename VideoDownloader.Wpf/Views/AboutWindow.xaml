@@ -2,24 +2,63 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:VideoDownloader.Wpf.Localization"
-        Title="{loc:Tr 'About VideoDownloader'}" Height="260" Width="380"
+        Title="{loc:Tr 'About VideoDownloader'}" Height="400" Width="420"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Background="{StaticResource BackgroundBrush}">
-    <StackPanel Margin="16">
-        <TextBlock Text="{Binding Version}" Margin="0,0,0,4" />
-        <TextBlock Text="{Binding BuildDate}" Margin="0,0,0,4" />
-        <TextBlock Text="{Binding Author}" Margin="0,0,0,4" />
-        <TextBlock Margin="0,0,0,12">
-            <Hyperlink Command="{Binding OpenEmailCommand}">info@appit.pl</Hyperlink>
-        </TextBlock>
-        <TextBlock Text="{loc:Tr 'Uses the following tools:'}" Margin="0,0,0,4" />
-        <TextBlock>
-            <Hyperlink Command="{Binding OpenYtDlpCommand}">yt-dlp</Hyperlink>
-        </TextBlock>
-        <TextBlock>
-            <Hyperlink Command="{Binding OpenFFmpegCommand}">FFmpeg</Hyperlink>
-        </TextBlock>
-        <Button Content="{loc:Tr 'Close'}" Style="{StaticResource PrimaryButtonStyle}"
-                HorizontalAlignment="Right" Margin="0,16,0,0" Click="Close_Click" />
-    </StackPanel>
+        Background="{DynamicResource CardBrush}" Foreground="{DynamicResource ForegroundBrush}">
+    <Window.Resources>
+        <LinearGradientBrush x:Key="HeaderBrush" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4A87F2" Offset="0" />
+            <GradientStop Color="{StaticResource AccentColor}" Offset="1" />
+        </LinearGradientBrush>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="{StaticResource HeaderBrush}" Padding="20,24">
+            <StackPanel Orientation="Horizontal">
+                <Image Source="{Binding IconSource}" Width="48" Height="48" VerticalAlignment="Center" />
+                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                    <TextBlock Text="VideoDownloader" FontSize="22" FontWeight="Bold" Foreground="White" />
+                    <TextBlock Text="{Binding Version}" Foreground="#DCE6FC" FontSize="12" Margin="0,2,0,0" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="20,18,20,16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="{Binding BuildDate}" Foreground="{DynamicResource SubtleForegroundBrush}" FontSize="12" Margin="0,0,0,4" />
+                <TextBlock Text="{Binding Author}" Foreground="{DynamicResource SubtleForegroundBrush}" FontSize="12" Margin="0,0,0,4" />
+                <TextBlock Margin="0,0,0,16" FontSize="12">
+                    <Hyperlink Command="{Binding OpenEmailCommand}">info@appit.pl</Hyperlink>
+                </TextBlock>
+
+                <Border BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="0,1,0,0" Margin="0,0,0,12" />
+
+                <TextBlock Text="{loc:Tr 'Uses the following tools:'}" Margin="0,0,0,8" />
+                <StackPanel Orientation="Horizontal">
+                    <Border Style="{StaticResource CardStyle}" Padding="10,4" Margin="0,0,8,0">
+                        <TextBlock>
+                            <Hyperlink Command="{Binding OpenYtDlpCommand}">yt-dlp</Hyperlink>
+                        </TextBlock>
+                    </Border>
+                    <Border Style="{StaticResource CardStyle}" Padding="10,4">
+                        <TextBlock>
+                            <Hyperlink Command="{Binding OpenFFmpegCommand}">FFmpeg</Hyperlink>
+                        </TextBlock>
+                    </Border>
+                </StackPanel>
+            </StackPanel>
+
+            <Button Grid.Row="1" Content="{loc:Tr 'Close'}" Style="{StaticResource PrimaryButtonStyle}"
+                    HorizontalAlignment="Right" Width="100" Click="Close_Click" />
+        </Grid>
+    </Grid>
 </Window>

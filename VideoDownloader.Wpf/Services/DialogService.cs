@@ -15,6 +15,34 @@ namespace VideoDownloader.Wpf.Services
             window.ShowDialog();
         }
 
+        public async Task ShowHistory(Func<string, Task> onRedownload)
+        {
+            var viewModel = new HistoryViewModel(this, onRedownload);
+
+            System.Windows.Input.Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+            try
+            {
+                await viewModel.LoadAsync();
+            }
+            finally
+            {
+                System.Windows.Input.Mouse.OverrideCursor = null;
+            }
+
+            var window = new HistoryWindow { DataContext = viewModel };
+            window.Owner = System.Windows.Application.Current.MainWindow;
+            window.ShowDialog();
+        }
+
+        public bool Confirm(string message, string title)
+        {
+            var window = new ConfirmDialogWindow(title, message, Core.Localization.T("Yes"), Core.Localization.T("No"))
+            {
+                Owner = System.Windows.Application.Current.MainWindow
+            };
+            return window.ShowDialog() == true;
+        }
+
         public async Task<(DataVideoSource video, DataAudioSource audio, string videoTitle, float duration)?> ShowSourceChooser(Downloader downloader)
         {
             var viewModel = new SourceChooserViewModel(downloader);

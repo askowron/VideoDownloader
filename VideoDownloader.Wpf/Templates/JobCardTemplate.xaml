@@ -21,7 +21,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
                     <TextBlock Text="{Binding Title}" FontWeight="Bold" TextTrimming="CharacterEllipsis" />
-                    <TextBlock Text="{Binding Url}" Foreground="Gray" FontSize="11" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{Binding Url}" Foreground="{DynamicResource SubtleForegroundBrush}" FontSize="11" TextTrimming="CharacterEllipsis" />
                     <Grid Height="28" Margin="0,6,0,0">
                         <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercentage, Mode=OneWay}">
                             <ProgressBar.Style>

@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using VideoDownloader.Core.History;
 
 namespace VideoDownloader.Core
 {
@@ -16,6 +17,7 @@ namespace VideoDownloader.Core
         }
 
         private readonly Queue<PendingDownload> _pending = new();
+        private readonly HistoryRepository _history = new();
         private int _maxConcurrentDownloads = 1;
 
         public ObservableCollection<DownloadJob> Jobs { get; } = new();
@@ -80,10 +82,42 @@ namespace VideoDownloader.Core
             }
             finally
             {
+                await SaveHistoryAsync(pending.Job);
                 pending.Downloader.Dispose();
                 CountsChanged?.Invoke(this, EventArgs.Empty);
                 TryStartQueuedDownloads();
             }
+        }
+
+        /// <summary>
+        /// Persists one history row per finished download attempt (Completed/Failed/Canceled
+        /// alike). Average speed is computed from the final reported size over the wall-clock
+        /// duration rather than trusting the last instantaneous <see cref="DownloadJob.Speed"/>
+        /// sample, which can be stale or missing right at completion/cancellation.
+        /// </summary>
+        private async Task SaveHistoryAsync(DownloadJob job)
+        {
+            var finishedAtUtc = DateTime.UtcNow;
+            var startedAtUtc = job.StartedAtUtc ?? finishedAtUtc;
+            var durationSeconds = Math.Max(0, (finishedAtUtc - startedAtUtc).TotalSeconds);
+            var fileSizeBytes = HistorySizeParser.ParseBytes(job.FileSize);
+
+            await _history.AddAsync(new DownloadHistoryEntry
+            {
+                Url = job.Url,
+                Title = job.Title,
+                StartedAtUtc = startedAtUtc,
+                FinishedAtUtc = finishedAtUtc,
+                DurationSeconds = durationSeconds,
+                FileSizeBytes = fileSizeBytes,
+                AverageSpeedBytesPerSec = fileSizeBytes.HasValue && durationSeconds > 0
+                    ? fileSizeBytes.Value / durationSeconds
+                    : null,
+                Status = job.State.ToString(),
+                Resolution = job.Resolution,
+                Format = job.Format,
+                ErrorMessage = job.ErrorMessage
+            });
         }
     }
 }

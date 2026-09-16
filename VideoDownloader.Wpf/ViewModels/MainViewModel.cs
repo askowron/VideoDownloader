@@ -3,13 +3,13 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using VideoDownloader.Core;
 using VideoDownloader.Core.Tools;
 using VideoDownloader.Core.Windows;
 using VideoDownloader.Wpf.Services;
+using VideoDownloader.Wpf.Theming;
 
 namespace VideoDownloader.Wpf.ViewModels
 {
@@ -45,6 +45,19 @@ namespace VideoDownloader.Wpf.ViewModels
             {
                 if (Core.Localization.Language == value) return;
                 Core.Localization.Language = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public AppTheme[] AvailableThemes { get; } = Enum.GetValues<AppTheme>();
+
+        public AppTheme Theme
+        {
+            get => ThemeManager.Theme;
+            set
+            {
+                if (ThemeManager.Theme == value) return;
+                ThemeManager.Theme = value;
                 OnPropertyChanged();
             }
         }
@@ -125,6 +138,15 @@ namespace VideoDownloader.Wpf.ViewModels
         private void About() => _dialogService.ShowAbout();
 
         [RelayCommand]
+        private async Task History() => await _dialogService.ShowHistory(RedownloadFromHistoryAsync);
+
+        private async Task RedownloadFromHistoryAsync(string url)
+        {
+            SourceUrl = url;
+            await DownloadOne(interactive: true, preferred: null);
+        }
+
+        [RelayCommand]
         private void BuyCoffee() =>
             Process.Start(new ProcessStartInfo { FileName = "https://buycoffee.to/rico", UseShellExecute = true });
 
@@ -134,9 +156,9 @@ namespace VideoDownloader.Wpf.ViewModels
             if (job == null) return;
 
             if (job.State == DownloadingState.Downloading &&
-                System.Windows.MessageBox.Show(Core.Localization.T("Are you sure you want to cancel downloading?"), Core.Localization.T("Downloading"), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                _dialogService.Confirm(Core.Localization.T("Are you sure you want to cancel downloading?"), Core.Localization.T("Downloading")))
             {
-                // MessageBox.Show is modal but still pumps the dispatcher, so the download can
+                // The confirm dialog is modal but still pumps the dispatcher, so the download can
                 // finish (and dispose its CancellationTokenSource) while the confirmation is up.
                 // Re-check the state before touching the possibly-disposed token source.
                 if (job.State == DownloadingState.Downloading)
@@ -203,9 +225,9 @@ namespace VideoDownloader.Wpf.ViewModels
 
         public async Task LoadMultipleAsync(IReadOnlyList<string> lines)
         {
-            if (lines.Count < 2 || System.Windows.MessageBox.Show(
+            if (lines.Count < 2 || _dialogService.Confirm(
                 string.Format(Core.Localization.T("Found {0} urls! Are you sure you want to download them all?"), lines.Count),
-                Core.Localization.T("Download"), MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                Core.Localization.T("Download")))
             {
                 (DataVideoSource video, DataAudioSource audio)? preferred = null;
                 bool isFirst = true;
@@ -270,12 +292,10 @@ namespace VideoDownloader.Wpf.ViewModels
             try
             {
                 string result = await YtDlpUpdater.UpdateAsync();
-                if (result.Length == 0) return;
+                if (result.Length == 0 || result.Contains("up to date", StringComparison.OrdinalIgnoreCase))
+                    return;
 
-                if (result.Contains("up to date", StringComparison.OrdinalIgnoreCase))
-                    _notifications.Info($"yt-dlp: {result}");
-                else
-                    _notifications.Success($"yt-dlp: {result}");
+                _notifications.Success($"{Core.Localization.T("yt-dlp updated successfully")}: {result}");
             }
             catch (Exception ex)
             {
@@ -285,5 +305,15 @@ namespace VideoDownloader.Wpf.ViewModels
 
         internal DownloadQueueManager Queue => _queue;
         internal Notifications NotificationsService => _notifications;
+
+        /// <summary>Returns false (and shows a confirmation) if the app should not close because a download is active.</summary>
+        public bool CanClose()
+        {
+            if (_queue.ActiveCount == 0) return true;
+
+            return _dialogService.Confirm(
+                Core.Localization.T("A download is in progress. Are you sure you want to exit?"),
+                Core.Localization.T("Exit"));
+        }
     }
 }

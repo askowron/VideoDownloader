@@ -22,7 +22,7 @@
                     </Style.Triggers>
                 </Style>
             </Border.Style>
-            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Foreground="Black" />
         </Border>
     </DataTemplate>
 

@@ -4,7 +4,7 @@
         xmlns:loc="clr-namespace:VideoDownloader.Wpf.Localization"
         Title="{loc:Tr 'Select sources'}" Height="220" Width="480"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource ForegroundBrush}">
     <StackPanel Margin="16">
         <TextBlock Text="{loc:Tr 'Video:'}" Margin="0,0,0,4" />
         <ComboBox ItemsSource="{Binding VideoSources}" SelectedItem="{Binding SelectedVideo}" Margin="0,0,0,12" />
@@ -13,8 +13,9 @@
         <ComboBox ItemsSource="{Binding AudioSources}" SelectedItem="{Binding SelectedAudio}" Margin="0,0,0,12" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="{loc:Tr 'Cancel'}" Command="{Binding CancelCommand}" Margin="0,0,8,0" />
-            <Button Content="{loc:Tr 'Download'}" Style="{StaticResource PrimaryButtonStyle}"
+            <Button Content="{loc:Tr 'Cancel'}" Style="{StaticResource SecondaryButtonStyle}" Width="100"
+                    Command="{Binding CancelCommand}" Margin="0,0,8,0" />
+            <Button Content="{loc:Tr 'Download'}" Style="{StaticResource PrimaryButtonStyle}" Width="100"
                     Command="{Binding DownloadCommand}" IsEnabled="{Binding CanDownload}" />
         </StackPanel>
     </StackPanel>

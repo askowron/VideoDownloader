@@ -27,6 +27,7 @@ namespace VideoDownloader.Core.Windows
         public const string YTDL_REGISTRY_VALUE_LAST_DESTINATION_PATH = "LastDestinationPath";
         public const string YTDL_REGISTRY_VALUE_MAX_CONCURRENT_DOWNLOADS = "MaxConcurrentDownloads";
         public const string YTDL_REGISTRY_VALUE_LANGUAGE = "Language";
+        public const string YTDL_REGISTRY_VALUE_THEME = "Theme";
 
         public static string ReadString(string keyPath, string valueName)
         {
@@ -99,6 +100,16 @@ namespace VideoDownloader.Core.Windows
         public static void SetLanguage(string language)
         {
             WriteString(YTDL_REGISTRY_KEY, YTDL_REGISTRY_VALUE_LANGUAGE, language);
+        }
+
+        public static string GetTheme()
+        {
+            return ReadString(YTDL_REGISTRY_KEY, YTDL_REGISTRY_VALUE_THEME);
+        }
+
+        public static void SetTheme(string theme)
+        {
+            WriteString(YTDL_REGISTRY_KEY, YTDL_REGISTRY_VALUE_THEME, theme);
         }
 
         #endregion

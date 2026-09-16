@@ -3,11 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:VideoDownloader.Wpf.Localization"
         Title="VideoDownloader" Height="650" Width="950" MinWidth="600"
-        Background="{StaticResource BackgroundBrush}"
-        Activated="Window_Activated" Loaded="Window_Loaded">
+        Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource ForegroundBrush}"
+        Activated="Window_Activated" Loaded="Window_Loaded" Closing="Window_Closing">
     <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -15,36 +14,59 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
-            <TextBlock Text="{loc:Tr 'Source (link)'}" VerticalAlignment="Center" Width="140" />
-            <TextBox Text="{Binding SourceUrl, UpdateSourceTrigger=PropertyChanged}" Width="500" />
-            <Button Content="{loc:Tr 'Download'}" Style="{StaticResource PrimaryButtonStyle}" Margin="8,0,0,0"
+        <Grid Grid.Row="0" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="190" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{loc:Tr 'Source (link)'}" VerticalAlignment="Center" />
+            <Grid Grid.Column="1">
+                <TextBox Text="{Binding SourceUrl, UpdateSourceTrigger=PropertyChanged}" Padding="4,0,28,0" VerticalContentAlignment="Center" />
+                <Button Content="📄" Command="{Binding LoadFileCommand}" ToolTip="{loc:Tr 'Load TXT'}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center" Width="22" Height="22" Margin="0,0,4,0"
+                        Background="Transparent" BorderThickness="0" Cursor="Hand" />
+            </Grid>
+            <Button Grid.Column="2" Content="{loc:Tr 'Download'}" Style="{StaticResource PrimaryButtonStyle}" Width="100" Margin="8,0,0,0"
                     Command="{Binding DownloadCommand}" />
-        </StackPanel>
+        </Grid>
 
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
-            <TextBlock Text="{loc:Tr 'Destination (path)'}" VerticalAlignment="Center" Width="140" />
-            <TextBox Text="{Binding DestinationPath}" Width="440" IsReadOnly="True" />
-            <Button Content="{loc:Tr 'Browse'}" Margin="8,0,0,0" Command="{Binding BrowseCommand}" />
-            <Button Content="📂" Margin="8,0,0,0" Command="{Binding OpenFolderCommand}" />
-            <Button Content="{loc:Tr '📄 Load'}" Margin="8,0,0,0" Command="{Binding LoadFileCommand}" />
-        </StackPanel>
+        <Grid Grid.Row="1" Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="190" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{loc:Tr 'Destination (path)'}" VerticalAlignment="Center" />
+            <Grid Grid.Column="1">
+                <TextBox Text="{Binding DestinationPath}" IsReadOnly="True" Padding="4,0,28,0" VerticalContentAlignment="Center" />
+                <Button Content="📂" Command="{Binding OpenFolderCommand}" ToolTip="{loc:Tr 'Open destination folder'}"
+                        HorizontalAlignment="Right" VerticalAlignment="Center" Width="22" Height="22" Margin="0,0,4,0"
+                        Background="Transparent" BorderThickness="0" Cursor="Hand" />
+            </Grid>
+            <Button Grid.Column="2" Content="{loc:Tr 'Browse'}" Style="{StaticResource SecondaryButtonStyle}" Width="100" Margin="8,0,0,0" Command="{Binding BrowseCommand}" />
+        </Grid>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,8">
-            <TextBlock Text="{Binding MaxConcurrentLabel}" VerticalAlignment="Center" Width="200" />
-            <Slider Minimum="1" Maximum="20" Value="{Binding MaxConcurrentDownloads}" Width="200" TickFrequency="1" IsSnapToTickEnabled="True" />
-            <Button Content="{loc:Tr 'ℹ️ About'}" Margin="16,0,0,0" Command="{Binding AboutCommand}" />
-            <Button Content="{loc:Tr '☕ Buy me a coffee'}" Margin="8,0,0,0" Command="{Binding BuyCoffeeCommand}" />
-            <ComboBox ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding Language}" Width="100" Margin="16,0,0,0" />
-        </StackPanel>
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding Notifications}" Margin="0,0,0,8" />
 
-        <ItemsControl Grid.Row="3" ItemsSource="{Binding Notifications}" Margin="0,0,0,8" />
-
-        <ScrollViewer Grid.Row="4" VerticalScrollBarVisibility="Auto"
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto"
                       AllowDrop="True" Drop="JobList_Drop" DragEnter="JobList_DragEnter">
             <ItemsControl ItemsSource="{Binding Jobs}" />
         </ScrollViewer>
 
-        <TextBlock Grid.Row="5" Text="{Binding StatusText}" Margin="0,8,0,0" />
+        <Border Grid.Row="4" BorderBrush="{DynamicResource BorderBrush2}" BorderThickness="0,1,0,0" Margin="0,8,0,0" Padding="0,8,0,0">
+            <DockPanel>
+                <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" DockPanel.Dock="Left" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="{Binding MaxConcurrentLabel}" VerticalAlignment="Center" />
+                    <Slider Minimum="1" Maximum="20" Value="{Binding MaxConcurrentDownloads}" Width="140" VerticalAlignment="Center" TickFrequency="1" IsSnapToTickEnabled="True" />
+                    <Button Content="{loc:Tr 'ℹ️ About'}" Style="{StaticResource FlatButtonStyle}" Margin="16,0,0,0" Command="{Binding AboutCommand}" />
+                    <Button Content="{loc:Tr '🕑 History'}" Style="{StaticResource FlatButtonStyle}" Margin="8,0,0,0" Command="{Binding HistoryCommand}" />
+                    <Button Content="{loc:Tr '☕ Buy me a coffee'}" Style="{StaticResource FlatButtonStyle}" Margin="8,0,0,0" Command="{Binding BuyCoffeeCommand}" />
+                    <ComboBox ItemsSource="{Binding AvailableThemes}" SelectedItem="{Binding Theme}" Width="90" Margin="16,0,0,0" />
+                    <ComboBox ItemsSource="{Binding AvailableLanguages}" SelectedItem="{Binding Language}" Width="100" Margin="8,0,0,0" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
     </Grid>
 </Window>

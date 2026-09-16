@@ -1,6 +1,6 @@
 ﻿namespace VideoDownloader.Core.Tools
 {
-    internal class DataSize
+    public static class DataSize
     {
         public static string FromBytes(double bytes)
         {
