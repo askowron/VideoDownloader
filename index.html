@@ -5,36 +5,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VideoDownloader — a small Windows app for pulling down video</title>
 <meta name="description" content="Paste a link, pick a quality, get a file. A Windows app built on yt-dlp and FFmpeg, with batch downloads, a searchable history, and light/dark themes.">
+<link rel="canonical" href="https://askowron.github.io/VideoDownloader/">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#14161C">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="VideoDownloader — a small Windows app for pulling down video">
+<meta property="og:description" content="Paste a link, pick a quality, get a file. A Windows app built on yt-dlp and FFmpeg, with batch downloads, a searchable history, and light/dark themes.">
+<meta property="og:url" content="https://askowron.github.io/VideoDownloader/">
+<meta property="og:image" content="https://askowron.github.io/VideoDownloader/assets/app-dark.png">
+<meta property="og:site_name" content="VideoDownloader">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VideoDownloader — a small Windows app for pulling down video">
+<meta name="twitter:description" content="Paste a link, pick a quality, get a file. A Windows app built on yt-dlp and FFmpeg, with batch downloads, a searchable history, and light/dark themes.">
+<meta name="twitter:image" content="https://askowron.github.io/VideoDownloader/assets/app-dark.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "VideoDownloader",
+  "operatingSystem": "Windows",
+  "applicationCategory": "UtilitiesApplication",
+  "url": "https://askowron.github.io/VideoDownloader/",
+  "downloadUrl": "https://github.com/askowron/VideoDownloader/releases/latest",
+  "codeRepository": "https://github.com/askowron/VideoDownloader",
+  "license": "https://github.com/askowron/VideoDownloader/blob/main/LICENSE",
+  "author": { "@type": "Person", "name": "Adam Skowroński" },
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+
 <link rel="icon" href="assets/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#F5F7FB;
-    --surface:#FFFFFF;
-    --ink:#12151C;
-    --ink-muted:#5B6472;
-    --accent:#2F6FED;
-    --accent-deep:#1B4FC4;
-    --ok:#1E9E63;
-    --warn:#D99A2B;
-    --line:#E2E6ED;
+    --bg:#14161C;
+    --surface:#1B1E26;
+    --ink:#EDEFF3;
+    --ink-muted:#9AA3B2;
+    --accent:#5B8DEF;
+    --accent-deep:#8BAEF6;
+    --ok:#3FC383;
+    --warn:#E3B54C;
+    --line:#2C303A;
     --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --sans: "IBM Plex Sans", -apple-system, Segoe UI, Roboto, sans-serif;
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#14161C;
-      --surface:#1B1E26;
-      --ink:#EDEFF3;
-      --ink-muted:#9AA3B2;
-      --accent:#5B8DEF;
-      --accent-deep:#8BAEF6;
-      --ok:#3FC383;
-      --warn:#E3B54C;
-      --line:#2C303A;
-    }
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
