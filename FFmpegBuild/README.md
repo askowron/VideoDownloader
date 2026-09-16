@@ -2,7 +2,7 @@
 
 Projekt typu *Makefile* (nie kompiluje niczego przez MSBuild/C++), ktory
 buduje wlasny, okrojony `ffmpeg.exe` ze zrodel FFmpeg i wrzuca go do
-`ExternalLib\ffmpeg.exe`, skad `VideoDownloader.csproj` kopiuje go juz
+`ExternalLib\ffmpeg.exe`, skad `VideoDownloader.Wpf.csproj` kopiuje go juz
 automatycznie (`PostBuild` -> `xcopy ExternalLib\*.exe`).
 
 Build jest ograniczony wylacznie do **remuxu** (stream copy) kontenerow

@@ -1,6 +1,6 @@
 # VideoDownloader
 
-A Windows desktop app (.NET 8, WinForms) for downloading videos via [yt-dlp](https://github.com/yt-dlp/yt-dlp), with a stripped-down FFmpeg bundled for post-processing/remuxing.
+A Windows desktop app (.NET 8, WPF) for downloading videos via [yt-dlp](https://github.com/yt-dlp/yt-dlp), with a stripped-down FFmpeg bundled for post-processing/remuxing.
 
 ## Features
 
@@ -13,7 +13,8 @@ A Windows desktop app (.NET 8, WinForms) for downloading videos via [yt-dlp](htt
 
 ## Solution structure
 
-- **VideoDownloader** — the WinForms application (`net8.0-windows`). Uses [YoutubeDLSharp](https://www.nuget.org/packages/YoutubeDLSharp) to drive `yt-dlp.exe`, with a built-in updater (`Core/Tools/YtDlpUpdater.cs`) that runs `yt-dlp -U`.
+- **VideoDownloader.Wpf** — the WPF application (`net8.0-windows`). Uses [YoutubeDLSharp](https://www.nuget.org/packages/YoutubeDLSharp) to drive `yt-dlp.exe`.
+- **VideoDownloader.Core** — shared, UI-framework-agnostic library: download/queue logic, localization, registry persistence, error parsing, and the `yt-dlp -U` self-updater (`Tools/YtDlpUpdater.cs`).
 - **FFmpegBuild** — native (vcxproj) project that produces the FFmpeg binaries bundled with the app. Not part of the default solution build; see `FFmpegBuild/README.md` for how to (re)build it.
 - **VideoDownloader.Setup** — WiX installer project producing the MSI package.
 - **ExternalLib** — third-party executables (`yt-dlp.exe`, `ffmpeg.exe`) copied into the build output on `PostBuild`.
@@ -29,14 +30,14 @@ A Windows desktop app (.NET 8, WinForms) for downloading videos via [yt-dlp](htt
 Open `VideoDownloader.sln` in Visual Studio and build, or from the command line:
 
 ```
-dotnet build VideoDownloader\VideoDownloader.csproj -c Release
+dotnet build VideoDownloader.Wpf\VideoDownloader.Wpf.csproj -c Release
 ```
 
 The `PostBuild` target copies executables from `ExternalLib\` into the output directory automatically.
 
 ## Running
 
-Run the built `VideoDownloader.exe`, or `dotnet run --project VideoDownloader` for development.
+Run the built `VideoDownloader.Wpf.exe`, or `dotnet run --project VideoDownloader.Wpf` for development.
 
 ## License
 
