@@ -6,6 +6,14 @@
          palette key below uses DynamicResource so it re-resolves when ThemeManager swaps
          the palette dictionary, instead of StaticResource, which would only resolve once. -->
 
+    <!-- Vector icons, not emoji: color-emoji glyphs (📄/📂/🔄/🌐) render from a fixed-color
+         emoji font and ignore Foreground entirely, so they stayed dark in Dark theme no
+         matter what brush was applied. These paths take Fill from DynamicResource instead. -->
+    <Geometry x:Key="DocumentIconGeometry">M6,2 C4.9,2 4,2.9 4,4 L4,20 C4,21.1 4.9,22 6,22 L18,22 C19.1,22 20,21.1 20,20 L20,8 L14,2 L6,2 Z M13,3.5 L18.5,9 L13,9 L13,3.5 Z</Geometry>
+    <Geometry x:Key="FolderIconGeometry">M10,4 L4,4 C2.9,4 2,4.9 2,6 L2,18 C2,19.1 2.9,20 4,20 L20,20 C21.1,20 22,19.1 22,18 L22,8 C22,6.9 21.1,6 20,6 L12,6 L10,4 Z</Geometry>
+    <Geometry x:Key="RefreshIconGeometry">M17.65,6.35 C16.2,4.9 14.21,4 12,4 C7.58,4 4.01,7.58 4.01,12 C4.01,16.42 7.58,20 12,20 C15.73,20 18.84,17.45 19.73,14 L17.65,14 C16.89,16.28 14.7,18 12,18 C8.69,18 6,15.31 6,12 C6,8.69 8.69,6 12,6 C13.66,6 15.14,6.69 16.22,7.78 L13,11 L20,11 L20,4 L17.65,6.35 Z</Geometry>
+    <Geometry x:Key="OpenInNewIconGeometry">M19,19 L5,19 L5,5 L12,5 L12,3 L5,3 C3.9,3 3,3.9 3,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,12 L19,12 L19,19 Z M14,3 L14,5 L17.59,5 L7.76,14.83 L9.17,16.24 L19,6.41 L19,10 L21,10 L21,3 L14,3 Z</Geometry>
+
     <Style x:Key="PrimaryButtonStyle" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
         <Setter Property="Foreground" Value="White" />

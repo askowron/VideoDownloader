@@ -23,9 +23,13 @@
             <TextBlock Grid.Column="0" Text="{loc:Tr 'Source (link)'}" VerticalAlignment="Center" />
             <Grid Grid.Column="1">
                 <TextBox Text="{Binding SourceUrl, UpdateSourceTrigger=PropertyChanged}" Padding="4,0,28,0" VerticalContentAlignment="Center" />
-                <Button Content="📄" Command="{Binding LoadFileCommand}" ToolTip="{loc:Tr 'Load TXT'}"
+                <Button Command="{Binding LoadFileCommand}" ToolTip="{loc:Tr 'Load TXT'}"
                         HorizontalAlignment="Right" VerticalAlignment="Center" Width="22" Height="22" Margin="0,0,4,0"
-                        Background="Transparent" BorderThickness="0" Cursor="Hand" />
+                        Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="3">
+                    <Viewbox Stretch="Uniform">
+                        <Path Fill="{DynamicResource ForegroundBrush}" Data="{StaticResource DocumentIconGeometry}" />
+                    </Viewbox>
+                </Button>
             </Grid>
             <Button Grid.Column="2" Content="{loc:Tr 'Download'}" Style="{StaticResource PrimaryButtonStyle}" Width="100" Margin="8,0,0,0"
                     Command="{Binding DownloadCommand}" />
@@ -40,9 +44,13 @@
             <TextBlock Grid.Column="0" Text="{loc:Tr 'Destination (path)'}" VerticalAlignment="Center" />
             <Grid Grid.Column="1">
                 <TextBox Text="{Binding DestinationPath}" IsReadOnly="True" Padding="4,0,28,0" VerticalContentAlignment="Center" />
-                <Button Content="📂" Command="{Binding OpenFolderCommand}" ToolTip="{loc:Tr 'Open destination folder'}"
+                <Button Command="{Binding OpenFolderCommand}" ToolTip="{loc:Tr 'Open destination folder'}"
                         HorizontalAlignment="Right" VerticalAlignment="Center" Width="22" Height="22" Margin="0,0,4,0"
-                        Background="Transparent" BorderThickness="0" Cursor="Hand" />
+                        Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="3">
+                    <Viewbox Stretch="Uniform">
+                        <Path Fill="{DynamicResource ForegroundBrush}" Data="{StaticResource FolderIconGeometry}" />
+                    </Viewbox>
+                </Button>
             </Grid>
             <Button Grid.Column="2" Content="{loc:Tr 'Browse'}" Style="{StaticResource SecondaryButtonStyle}" Width="100" Margin="8,0,0,0" Command="{Binding BrowseCommand}" />
         </Grid>

@@ -35,14 +35,22 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <Button Content="🔄" ToolTip="{loc:Tr 'Redownload'}"
+                                    <Button ToolTip="{loc:Tr 'Redownload'}"
                                             Command="{Binding DataContext.RedownloadCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             CommandParameter="{Binding}"
-                                            Width="26" Height="26" Background="Transparent" BorderThickness="0" Cursor="Hand" />
-                                    <Button Content="🌐" ToolTip="{loc:Tr 'Open in browser'}"
+                                            Width="26" Height="26" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="5">
+                                        <Viewbox Stretch="Uniform">
+                                            <Path Fill="{DynamicResource ForegroundBrush}" Data="{StaticResource RefreshIconGeometry}" />
+                                        </Viewbox>
+                                    </Button>
+                                    <Button ToolTip="{loc:Tr 'Open in browser'}"
                                             Command="{Binding DataContext.OpenInBrowserCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                             CommandParameter="{Binding}"
-                                            Width="26" Height="26" Background="Transparent" BorderThickness="0" Cursor="Hand" />
+                                            Width="26" Height="26" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="5">
+                                        <Viewbox Stretch="Uniform">
+                                            <Path Fill="{DynamicResource ForegroundBrush}" Data="{StaticResource OpenInNewIconGeometry}" />
+                                        </Viewbox>
+                                    </Button>
                                 </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
