@@ -14,6 +14,11 @@ namespace VideoDownloader.Core
             public required Downloader Downloader { get; init; }
             public required (DataVideoSource video, DataAudioSource audio) Sources { get; init; }
             public required DownloadJob Job { get; init; }
+
+            /// <summary>Id of the "Waiting" row <see cref="Enqueue"/> already persisted for this
+            /// job, resolved before the download itself starts. Awaited (not blocked on) so a
+            /// slow-to-open history.db never delays starting the download.</summary>
+            public required Task<long> HistoryIdTask { get; init; }
         }
 
         private readonly Queue<PendingDownload> _pending = new();
@@ -48,7 +53,18 @@ namespace VideoDownloader.Core
         public void Enqueue(Downloader downloader, (DataVideoSource video, DataAudioSource audio) sources, DownloadJob job)
         {
             Jobs.Add(job);
-            _pending.Enqueue(new PendingDownload { Downloader = downloader, Sources = sources, Job = job });
+            var historyIdTask = _history.AddAsync(new DownloadHistoryEntry
+            {
+                Url = job.Url,
+                Title = job.Title,
+                StartedAtUtc = DateTime.UtcNow,
+                FinishedAtUtc = DateTime.UtcNow,
+                DurationSeconds = 0,
+                Status = job.State.ToString(),
+                Resolution = job.Resolution,
+                Format = job.Format
+            });
+            _pending.Enqueue(new PendingDownload { Downloader = downloader, Sources = sources, Job = job, HistoryIdTask = historyIdTask });
             TryStartQueuedDownloads();
 
             // TryStartQueuedDownloads() only raises CountsChanged when it actually starts a
@@ -82,7 +98,7 @@ namespace VideoDownloader.Core
             }
             finally
             {
-                await SaveHistoryAsync(pending.Job);
+                await SaveHistoryAsync(pending);
                 pending.Downloader.Dispose();
                 CountsChanged?.Invoke(this, EventArgs.Empty);
                 TryStartQueuedDownloads();
@@ -90,19 +106,22 @@ namespace VideoDownloader.Core
         }
 
         /// <summary>
-        /// Persists one history row per finished download attempt (Completed/Failed/Canceled
-        /// alike). Average speed is computed from the final reported size over the wall-clock
-        /// duration rather than trusting the last instantaneous <see cref="DownloadJob.Speed"/>
-        /// sample, which can be stale or missing right at completion/cancellation.
+        /// Updates the "Waiting" row <see cref="Enqueue"/> already persisted for this job into
+        /// its final Completed/Failed/Canceled state. Average speed is computed from the final
+        /// reported size over the wall-clock duration rather than trusting the last
+        /// instantaneous <see cref="DownloadJob.Speed"/> sample, which can be stale or missing
+        /// right at completion/cancellation.
         /// </summary>
-        private async Task SaveHistoryAsync(DownloadJob job)
+        private async Task SaveHistoryAsync(PendingDownload pending)
         {
+            var job = pending.Job;
             var finishedAtUtc = DateTime.UtcNow;
             var startedAtUtc = job.StartedAtUtc ?? finishedAtUtc;
             var durationSeconds = Math.Max(0, (finishedAtUtc - startedAtUtc).TotalSeconds);
             var fileSizeBytes = HistorySizeParser.ParseBytes(job.FileSize);
 
-            await _history.AddAsync(new DownloadHistoryEntry
+            long historyId = await pending.HistoryIdTask;
+            await _history.UpdateAsync(historyId, new DownloadHistoryEntry
             {
                 Url = job.Url,
                 Title = job.Title,

@@ -100,12 +100,14 @@ namespace VideoDownloader.Core
 
             try
             {
+                string outputPath = Path.Combine(
+                    Path.TrimEndingDirectorySeparator(DestinationPath),
+                    string.Join("_", job.Title.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).Trim() + "." +
+                    job.Format);
+
                 var extraOptions = new OptionSet()
                 {
-                    Output = Path.Combine(
-                        Path.TrimEndingDirectorySeparator(DestinationPath),
-                        string.Join("_", job.Title.Split(Path.GetInvalidFileNameChars(), StringSplitOptions.RemoveEmptyEntries)).Trim() + "." +
-                        job.Format),
+                    Output = outputPath,
                     CheckFormats = true,
                     //CheckAllFormats = true,
                     CustomOptions = new IOption[]
@@ -124,6 +126,13 @@ namespace VideoDownloader.Core
                     null,
                     extraOptions
                 );
+
+                // yt-dlp's progress hook reports the size of the separate video+audio streams
+                // being fetched, not the final merged/recoded MP4 - relying on it left the
+                // history's Size/Avg. speed columns wrong or empty. The real output file on
+                // disk is the source of truth for the final size.
+                if (File.Exists(outputPath))
+                    job.FileSize = DataSize.FromBytes(new FileInfo(outputPath).Length);
 
                 job.DownloadEnd();
             }

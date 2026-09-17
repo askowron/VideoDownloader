@@ -33,7 +33,8 @@ namespace VideoDownloader.Core.History
             return Path.Combine(folder, "history.db");
         }
 
-        public async Task AddAsync(DownloadHistoryEntry entry)
+        /// <summary>Inserts a new row and returns its id, or -1 if the insert failed.</summary>
+        public async Task<long> AddAsync(DownloadHistoryEntry entry)
         {
             try
             {
@@ -46,19 +47,46 @@ namespace VideoDownloader.Core.History
                     INSERT INTO DownloadHistory
                         (Url, Title, StartedAtUtc, FinishedAtUtc, DurationSeconds, FileSizeBytes, AverageSpeedBytesPerSec, Status, Resolution, Format, ErrorMessage)
                     VALUES
-                        ($url, $title, $startedAtUtc, $finishedAtUtc, $durationSeconds, $fileSizeBytes, $averageSpeedBytesPerSec, $status, $resolution, $format, $errorMessage);";
+                        ($url, $title, $startedAtUtc, $finishedAtUtc, $durationSeconds, $fileSizeBytes, $averageSpeedBytesPerSec, $status, $resolution, $format, $errorMessage);
+                    SELECT last_insert_rowid();";
 
-                command.Parameters.AddWithValue("$url", entry.Url);
-                command.Parameters.AddWithValue("$title", entry.Title);
-                command.Parameters.AddWithValue("$startedAtUtc", entry.StartedAtUtc.ToString("o", CultureInfo.InvariantCulture));
-                command.Parameters.AddWithValue("$finishedAtUtc", entry.FinishedAtUtc.ToString("o", CultureInfo.InvariantCulture));
-                command.Parameters.AddWithValue("$durationSeconds", entry.DurationSeconds);
-                command.Parameters.AddWithValue("$fileSizeBytes", (object?)entry.FileSizeBytes ?? DBNull.Value);
-                command.Parameters.AddWithValue("$averageSpeedBytesPerSec", (object?)entry.AverageSpeedBytesPerSec ?? DBNull.Value);
-                command.Parameters.AddWithValue("$status", entry.Status);
-                command.Parameters.AddWithValue("$resolution", (object?)entry.Resolution ?? DBNull.Value);
-                command.Parameters.AddWithValue("$format", (object?)entry.Format ?? DBNull.Value);
-                command.Parameters.AddWithValue("$errorMessage", (object?)entry.ErrorMessage ?? DBNull.Value);
+                AddEntryParameters(command, entry);
+
+                var id = await command.ExecuteScalarAsync();
+                return Convert.ToInt64(id);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                return -1;
+            }
+        }
+
+        /// <summary>Overwrites an existing row (matched by <paramref name="id"/>) in place, e.g.
+        /// turning the "Downloading" row <see cref="AddAsync"/> created into its final
+        /// Completed/Failed/Canceled state. A no-op if <paramref name="id"/> is not positive
+        /// (the initial insert itself failed, per <see cref="AddAsync"/>'s convention).</summary>
+        public async Task UpdateAsync(long id, DownloadHistoryEntry entry)
+        {
+            if (id <= 0) return;
+
+            try
+            {
+                using var connection = new SqliteConnection(_connectionString);
+                await connection.OpenAsync();
+                await EnsureTableAsync(connection);
+
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    UPDATE DownloadHistory SET
+                        Url = $url, Title = $title, StartedAtUtc = $startedAtUtc, FinishedAtUtc = $finishedAtUtc,
+                        DurationSeconds = $durationSeconds, FileSizeBytes = $fileSizeBytes,
+                        AverageSpeedBytesPerSec = $averageSpeedBytesPerSec, Status = $status,
+                        Resolution = $resolution, Format = $format, ErrorMessage = $errorMessage
+                    WHERE Id = $id;";
+
+                AddEntryParameters(command, entry);
+                command.Parameters.AddWithValue("$id", id);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -66,6 +94,21 @@ namespace VideoDownloader.Core.History
             {
                 System.Diagnostics.Debug.WriteLine(ex);
             }
+        }
+
+        private static void AddEntryParameters(SqliteCommand command, DownloadHistoryEntry entry)
+        {
+            command.Parameters.AddWithValue("$url", entry.Url);
+            command.Parameters.AddWithValue("$title", entry.Title);
+            command.Parameters.AddWithValue("$startedAtUtc", entry.StartedAtUtc.ToString("o", CultureInfo.InvariantCulture));
+            command.Parameters.AddWithValue("$finishedAtUtc", entry.FinishedAtUtc.ToString("o", CultureInfo.InvariantCulture));
+            command.Parameters.AddWithValue("$durationSeconds", entry.DurationSeconds);
+            command.Parameters.AddWithValue("$fileSizeBytes", (object?)entry.FileSizeBytes ?? DBNull.Value);
+            command.Parameters.AddWithValue("$averageSpeedBytesPerSec", (object?)entry.AverageSpeedBytesPerSec ?? DBNull.Value);
+            command.Parameters.AddWithValue("$status", entry.Status);
+            command.Parameters.AddWithValue("$resolution", (object?)entry.Resolution ?? DBNull.Value);
+            command.Parameters.AddWithValue("$format", (object?)entry.Format ?? DBNull.Value);
+            command.Parameters.AddWithValue("$errorMessage", (object?)entry.ErrorMessage ?? DBNull.Value);
         }
 
         public async Task<IReadOnlyList<DownloadHistoryEntry>> GetAllAsync()
@@ -79,7 +122,7 @@ namespace VideoDownloader.Core.History
 
                 var command = connection.CreateCommand();
                 command.CommandText = @"
-                    SELECT Url, Title, StartedAtUtc, FinishedAtUtc, DurationSeconds, FileSizeBytes, AverageSpeedBytesPerSec, Status, Resolution, Format, ErrorMessage
+                    SELECT Id, Url, Title, StartedAtUtc, FinishedAtUtc, DurationSeconds, FileSizeBytes, AverageSpeedBytesPerSec, Status, Resolution, Format, ErrorMessage
                     FROM DownloadHistory
                     ORDER BY StartedAtUtc DESC;";
 
@@ -88,17 +131,18 @@ namespace VideoDownloader.Core.History
                 {
                     results.Add(new DownloadHistoryEntry
                     {
-                        Url = reader.GetString(0),
-                        Title = reader.GetString(1),
-                        StartedAtUtc = DateTime.Parse(reader.GetString(2), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
-                        FinishedAtUtc = DateTime.Parse(reader.GetString(3), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
-                        DurationSeconds = reader.GetDouble(4),
-                        FileSizeBytes = reader.IsDBNull(5) ? null : reader.GetInt64(5),
-                        AverageSpeedBytesPerSec = reader.IsDBNull(6) ? null : reader.GetDouble(6),
-                        Status = reader.GetString(7),
-                        Resolution = reader.IsDBNull(8) ? null : reader.GetString(8),
-                        Format = reader.IsDBNull(9) ? null : reader.GetString(9),
-                        ErrorMessage = reader.IsDBNull(10) ? null : reader.GetString(10),
+                        Id = reader.GetInt64(0),
+                        Url = reader.GetString(1),
+                        Title = reader.GetString(2),
+                        StartedAtUtc = DateTime.Parse(reader.GetString(3), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
+                        FinishedAtUtc = DateTime.Parse(reader.GetString(4), CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind),
+                        DurationSeconds = reader.GetDouble(5),
+                        FileSizeBytes = reader.IsDBNull(6) ? null : reader.GetInt64(6),
+                        AverageSpeedBytesPerSec = reader.IsDBNull(7) ? null : reader.GetDouble(7),
+                        Status = reader.GetString(8),
+                        Resolution = reader.IsDBNull(9) ? null : reader.GetString(9),
+                        Format = reader.IsDBNull(10) ? null : reader.GetString(10),
+                        ErrorMessage = reader.IsDBNull(11) ? null : reader.GetString(11),
                     });
                 }
             }

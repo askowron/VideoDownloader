@@ -103,6 +103,7 @@ namespace VideoDownloader.Core
             ["Completed"] = "Zakończono",
             ["Failed"] = "Niepowodzenie",
             ["Canceled"] = "Anulowano",
+            ["Waiting"] = "Oczekiwanie",
             ["Search"] = "Szukaj",
             ["Actions"] = "Akcje",
             ["Redownload"] = "Pobierz ponownie",
