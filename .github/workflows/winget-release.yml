@@ -1,0 +1,27 @@
+name: Publish to WinGet
+
+# Opens a PR against microsoft/winget-pkgs updating APPIT.VideoDownloader to the new
+# version whenever a GitHub release is published. Only picks up the .msi asset - the
+# portable .zip isn't tracked by the winget manifest.
+#
+# One-time setup: create a classic GitHub PAT (scope: public_repo) at
+# https://github.com/settings/tokens and add it as a repository secret named
+# WINGET_TOKEN (Settings -> Secrets and variables -> Actions -> New repository secret).
+#
+# Requires APPIT.VideoDownloader to already exist in microsoft/winget-pkgs (i.e. the
+# initial submission PR must be merged first) - this workflow updates an existing
+# package, it doesn't create the first version.
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: vedantmgoyal9/winget-releaser@v2
+        with:
+          identifier: APPIT.VideoDownloader
+          installers-regex: '\.msi$'
+          token: ${{ secrets.WINGET_TOKEN }}

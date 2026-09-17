@@ -44,6 +44,8 @@ When the user asks to "wypuść release" (cut a release) for a version bump, do 
 5. `git push`.
 6. Tag (`git tag -a vX.Y.Z`), push the tag, and `gh release create` with both the `.zip` and `.msi` as assets and release notes summarizing what changed since the previous tag.
 
+Publishing the release (step 6) triggers `.github/workflows/winget-release.yml`, which opens a PR against `microsoft/winget-pkgs` updating the `APPIT.VideoDownloader` manifest to the new version automatically - no manual manifest work needed for versions after the first. This requires a one-time `WINGET_TOKEN` repository secret (classic GitHub PAT, `public_repo` scope) and only works once the initial submission PR (the first version ever published) has been merged upstream.
+
 ## Architecture
 
 ### Download flow
