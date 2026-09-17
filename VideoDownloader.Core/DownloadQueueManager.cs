@@ -76,6 +76,51 @@ namespace VideoDownloader.Core
             CountsChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Cancels a job that is still sitting in <see cref="_pending"/> (i.e. hasn't started
+        /// downloading yet). Downloading jobs are canceled separately via their own
+        /// <see cref="DownloadJob.CancellationTokenSource"/> - this only covers the queued case,
+        /// which has no token source to cancel and would otherwise sit there forever.
+        /// </summary>
+        public bool CancelWaiting(DownloadJob job)
+        {
+            if (job.State != DownloadingState.Waiting) return false;
+
+            PendingDownload? match = null;
+            var remaining = new Queue<PendingDownload>(_pending.Count);
+            foreach (var pending in _pending)
+            {
+                if (match == null && pending.Job == job)
+                {
+                    match = pending;
+                    continue;
+                }
+                remaining.Enqueue(pending);
+            }
+
+            if (match == null) return false;
+
+            _pending.Clear();
+            foreach (var pending in remaining)
+                _pending.Enqueue(pending);
+
+            job.State = DownloadingState.Canceled;
+            match.Downloader.Dispose();
+            _ = SaveHistoryAsync(match);
+            CountsChanged?.Invoke(this, EventArgs.Empty);
+            return true;
+        }
+
+        /// <summary>
+        /// Removes a finished job's card from <see cref="Jobs"/> without touching the file it
+        /// produced or its already-saved history entry - just decluttering the list.
+        /// </summary>
+        public void RemoveJob(DownloadJob job)
+        {
+            if (Jobs.Remove(job))
+                CountsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         public void TryStartQueuedDownloads()
         {
             bool started = false;

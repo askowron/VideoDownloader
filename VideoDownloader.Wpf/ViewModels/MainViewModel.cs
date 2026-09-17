@@ -155,6 +155,18 @@ namespace VideoDownloader.Wpf.ViewModels
         {
             if (job == null) return;
 
+            if (job.State == DownloadingState.Waiting)
+            {
+                _queue.CancelWaiting(job);
+                return;
+            }
+
+            if (job.State == DownloadingState.Completed)
+            {
+                _queue.RemoveJob(job);
+                return;
+            }
+
             if (job.State == DownloadingState.Downloading &&
                 _dialogService.Confirm(Core.Localization.T("Are you sure you want to cancel downloading?"), Core.Localization.T("Downloading")))
             {
