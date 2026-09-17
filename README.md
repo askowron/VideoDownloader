@@ -18,7 +18,7 @@ A Windows desktop app (.NET 8, WPF) for downloading videos via [yt-dlp](https://
 - **VideoDownloader.Wpf** — the WPF application (`net8.0-windows`). Uses [YoutubeDLSharp](https://www.nuget.org/packages/YoutubeDLSharp) to drive `yt-dlp.exe`.
 - **VideoDownloader.Core** — shared, UI-framework-agnostic library: download/queue logic, localization, registry persistence, error parsing, the `yt-dlp -U` self-updater (`Tools/YtDlpUpdater.cs`), and a SQLite-backed download history (`History/`).
 - **FFmpegBuild** — native (vcxproj) project that produces the FFmpeg binaries bundled with the app. Not part of the default solution build; see `FFmpegBuild/README.md` for how to (re)build it.
-- **Installer** — WiX v5 project (`VideoDownloader.Installer.wixproj`) producing the MSI package (`Installer/bin/Release/VideoDownloader-{version}-Setup.msi`), installed per-machine with a Start Menu shortcut.
+- **Installer** — WiX v5 project (`VideoDownloader.Installer.wixproj`) producing the MSI package (`Installer/bin/x64/Release/VideoDownloader-{version}-Setup.msi`), installed per-machine with a Start Menu shortcut.
 - **ExternalLib** — third-party executables (`yt-dlp.exe`, `ffmpeg.exe`) copied into the build output on `PostBuild`.
 
 ## Requirements
@@ -45,7 +45,7 @@ Build the app in Release first (above), then:
 dotnet build Installer\VideoDownloader.Installer.wixproj -c Release
 ```
 
-This packages the app's Release output into `Installer\bin\Release\VideoDownloader-{version}-Setup.msi`.
+This packages the app's Release output into `Installer\bin\x64\Release\VideoDownloader-{version}-Setup.msi`.
 
 ## Running
 

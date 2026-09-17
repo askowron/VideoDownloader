@@ -18,7 +18,7 @@
     <Property Id="ARPURLINFOABOUT" Value="https://github.com/askowron/VideoDownloader" />
     <Property Id="ARPCONTACT" Value="Adam Skowroński" />
 
-    <StandardDirectory Id="ProgramFilesFolder">
+    <StandardDirectory Id="ProgramFiles64Folder">
       <Directory Id="ManufacturerFolder" Name="APPIT">
         <Directory Id="INSTALLFOLDER" Name="VideoDownloader" />
       </Directory>

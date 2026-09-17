@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Package</OutputType>
+    <!-- Without this, "dotnet build -c Release" (no explicit -p:Platform) defaults to x86,
+         producing a 32-bit MSI that installs to "Program Files (x86)" and registers in ARP as
+         X86 even though the packaged app is x64 - mismatched with Product.wxs's Platform="x64"
+         and with the winget manifest's declared Architecture: x64. -->
+    <Platform>x64</Platform>
     <ProductVersion>0.7.0</ProductVersion>
     <OutputName>VideoDownloader-$(ProductVersion)-Setup</OutputName>
     <!-- Publish output of VideoDownloader.Wpf that gets packaged into the MSI. Build that
