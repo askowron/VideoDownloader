@@ -33,6 +33,17 @@ dotnet build Installer\VideoDownloader.Installer.wixproj -c Release
 
 When bumping the app version, update it in both `VideoDownloader.Wpf\VideoDownloader.Wpf.csproj` (`<Version>`) and `Installer\VideoDownloader.Installer.wixproj` (`<ProductVersion>`) - they aren't derived from a single source.
 
+## Release process
+
+When the user asks to "wypuść release" (cut a release) for a version bump, do all of the following, in order:
+
+1. Update `README.md`, `CLAUDE.md`, and `index.html` to reflect whatever changed since the last release (new features, fixed docs, etc.) - don't just bump the version number silently.
+2. Bump the version (see the note above - both `VideoDownloader.Wpf.csproj` and `VideoDownloader.Installer.wixproj`).
+3. Build `VideoDownloader.Wpf` in Release, then the zip (Windows-only runtimes, no `.pdb`, no stale zip already sitting in the output dir - see prior release commits for the exact PowerShell staging step), then the MSI installer.
+4. Commit with a **thematic split** - separate commits per logical change (e.g. one for the version bump/doc updates, others for any unrelated feature/fix work that rode along), not one giant commit. Ask before bundling in unrelated pre-existing uncommitted changes that aren't part of this release.
+5. `git push`.
+6. Tag (`git tag -a vX.Y.Z`), push the tag, and `gh release create` with both the `.zip` and `.msi` as assets and release notes summarizing what changed since the previous tag.
+
 ## Architecture
 
 ### Download flow
