@@ -1,0 +1,37 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <ProductVersion>0.7.0</ProductVersion>
+    <OutputName>VideoDownloader-$(ProductVersion)-Setup</OutputName>
+    <!-- Publish output of VideoDownloader.Wpf that gets packaged into the MSI. Build that
+         project in Release first - this project only packages the existing output, it doesn't
+         build the app itself. -->
+    <AppPublishDir>..\VideoDownloader.Wpf\bin\Release\net8.0-windows\</AppPublishDir>
+    <!-- Windows-only subset of AppPublishDir, filtered by StageAppFiles below (no .pdb, no
+         non-Windows native runtimes, no leftover release zip) since WiX's own Files/Exclude
+         glob doesn't support a mid-segment wildcard like "runtimes\linux-*\**". -->
+    <StagedAppDir>obj\app\</StagedAppDir>
+    <DefineConstants>ProductVersion=$(ProductVersion);AppPublishDir=$(StagedAppDir)</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+  </ItemGroup>
+
+  <Target Name="StageAppFiles" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <_AppFiles Include="$(AppPublishDir)**\*.*"
+                 Exclude="$(AppPublishDir)**\*.pdb;
+                          $(AppPublishDir)runtimes\linux-*\**\*.*;
+                          $(AppPublishDir)runtimes\osx-*\**\*.*;
+                          $(AppPublishDir)runtimes\maccatalyst-*\**\*.*;
+                          $(AppPublishDir)runtimes\browser-*\**\*.*;
+                          $(AppPublishDir)*.zip" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_AppFiles)"
+          DestinationFiles="@(_AppFiles->'$(StagedAppDir)%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

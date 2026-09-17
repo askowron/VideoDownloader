@@ -11,7 +11,7 @@ A Windows desktop app (.NET 8, WPF) for downloading videos via [yt-dlp](https://
 - **VideoDownloader.Wpf** (`net8.0-windows`) — the WPF application (MVVM via CommunityToolkit.Mvvm). This is where almost all work happens.
 - **VideoDownloader.Core** (`net8.0-windows`) — shared, UI-framework-agnostic class library: download/queue/notification logic (`Downloader`, `DownloadJob`, `DownloadQueueManager`, `Notifications`, `QualityMatcher`), localization, registry persistence, error parsing, and a SQLite-backed download history (`History/`, via the `Microsoft.Data.Sqlite` package). Referenced by `VideoDownloader.Wpf`.
 - **FFmpegBuild** — native Makefile-style vcxproj that cross-compiles a stripped-down `ffmpeg.exe` from source via MSYS2/mingw and drops it into `ExternalLib\ffmpeg.exe`. Not part of the default solution build (avoids requiring MSYS2 on every dev machine) — build it manually only when FFmpeg needs to change. See `FFmpegBuild/README.md` (Polish) for details.
-- **Setup** — legacy Visual Studio Installer project (`Setup.vdproj`) producing the MSI package. Not WiX-based despite older docs/plans referring to it as `VideoDownloader.Setup`; slated to be replaced by a WiX installer eventually.
+- **Installer** — WiX v5 SDK-style project (`VideoDownloader.Installer.wixproj`) producing the MSI package (`Installer/bin/Release/VideoDownloader-{version}-Setup.msi`). Packages the already-built `VideoDownloader.Wpf` Release output, not the source — build that project in Release first. `StageAppFiles` (a `BeforeTargets="CoreCompile"` target in the wixproj) copies a Windows-only subset of that output (no `.pdb`, no non-Windows native runtimes, no leftover release zip) into `obj\app\`, which `Product.wxs`'s `<Files>` element then harvests into MSI components. Installs per-machine under `Program Files\APPIT\VideoDownloader` (requires elevation) with a Start Menu shortcut. Replaces the old `Setup.vdproj` (legacy VS Installer Projects extension, not WiX despite older docs/plans referring to it as `VideoDownloader.Setup`).
 - **ExternalLib** — third-party executables (`yt-dlp.exe`, `ffmpeg.exe`) copied into the app's build output by a `PostBuild` xcopy target in `VideoDownloader.Wpf.csproj`.
 
 There is no automated test suite in this repo.
@@ -24,9 +24,14 @@ dotnet build VideoDownloader.Wpf\VideoDownloader.Wpf.csproj -c Release
 
 # Run for development
 dotnet run --project VideoDownloader.Wpf
+
+# Build the MSI installer (after the app build above)
+dotnet build Installer\VideoDownloader.Installer.wixproj -c Release
 ```
 
-Building the full solution in Visual Studio also builds `Setup` (requires the Visual Studio Installer Projects extension); `FFmpegBuild` is excluded and must be built manually if `ffmpeg.exe` needs regenerating.
+`FFmpegBuild` is excluded from the default solution build and must be built manually if `ffmpeg.exe` needs regenerating. `Installer` depends on `VideoDownloader.Wpf`'s Release output already existing on disk (it's a file-path dependency, not a `ProjectReference`, so build ordering isn't automatic within Visual Studio/`dotnet build VideoDownloader.sln`) — build `VideoDownloader.Wpf` in Release first, then `Installer`, as two separate steps.
+
+When bumping the app version, update it in both `VideoDownloader.Wpf\VideoDownloader.Wpf.csproj` (`<Version>`) and `Installer\VideoDownloader.Installer.wixproj` (`<ProductVersion>`) - they aren't derived from a single source.
 
 ## Architecture
 

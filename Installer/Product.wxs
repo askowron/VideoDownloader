@@ -1,0 +1,58 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+
+  <Package Name="VideoDownloader"
+           Manufacturer="APPIT"
+           Version="$(var.ProductVersion)"
+           UpgradeCode="4AA3D2D1-3786-44AE-B9FF-231496767A1F"
+           Scope="perMachine"
+           Codepage="1250">
+
+    <SummaryInformation Description="VideoDownloader Setup" Manufacturer="APPIT" />
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Icon Id="VideoDownloader.ico" SourceFile="..\VideoDownloader.Wpf\Resources\VideoDownloader.ico" />
+    <Property Id="ARPPRODUCTICON" Value="VideoDownloader.ico" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/askowron/VideoDownloader" />
+    <Property Id="ARPCONTACT" Value="Adam Skowroński" />
+
+    <StandardDirectory Id="ProgramFilesFolder">
+      <Directory Id="ManufacturerFolder" Name="APPIT">
+        <Directory Id="INSTALLFOLDER" Name="VideoDownloader" />
+      </Directory>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut" Guid="8C6F6C3E-6C7D-4E2C-9A9C-0C0D5A8B8B21">
+        <Shortcut Id="ApplicationStartMenuShortcut"
+                  Name="VideoDownloader"
+                  Description="Download videos via yt-dlp"
+                  Target="[INSTALLFOLDER]VideoDownloader.Wpf.exe"
+                  WorkingDirectory="INSTALLFOLDER"
+                  Icon="VideoDownloader.ico" />
+        <RemoveFolder Id="CleanUpProgramMenuFolder" Directory="ProgramMenuFolder" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\APPIT\VideoDownloader" Name="StartMenuShortcut" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </StandardDirectory>
+
+    <Feature Id="Main" Title="VideoDownloader" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+
+    <ui:WixUI Id="WixUI_Minimal" />
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+  </Package>
+
+  <Fragment>
+    <ComponentGroup Id="AppFiles" Directory="INSTALLFOLDER">
+      <!-- $(var.AppPublishDir) is StageAppFiles' filtered copy (see the .wixproj) - it already
+           excludes .pdb, non-Windows native runtimes, and any leftover release zip. -->
+      <Files Include="$(var.AppPublishDir)**" />
+    </ComponentGroup>
+  </Fragment>
+
+</Wix>

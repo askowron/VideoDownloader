@@ -18,14 +18,14 @@ A Windows desktop app (.NET 8, WPF) for downloading videos via [yt-dlp](https://
 - **VideoDownloader.Wpf** — the WPF application (`net8.0-windows`). Uses [YoutubeDLSharp](https://www.nuget.org/packages/YoutubeDLSharp) to drive `yt-dlp.exe`.
 - **VideoDownloader.Core** — shared, UI-framework-agnostic library: download/queue logic, localization, registry persistence, error parsing, the `yt-dlp -U` self-updater (`Tools/YtDlpUpdater.cs`), and a SQLite-backed download history (`History/`).
 - **FFmpegBuild** — native (vcxproj) project that produces the FFmpeg binaries bundled with the app. Not part of the default solution build; see `FFmpegBuild/README.md` for how to (re)build it.
-- **Setup** — legacy Visual Studio Installer project (`Setup.vdproj`) producing the MSI package. Slated to be replaced by a WiX-based installer.
+- **Installer** — WiX v5 project (`VideoDownloader.Installer.wixproj`) producing the MSI package (`Installer/bin/Release/VideoDownloader-{version}-Setup.msi`), installed per-machine with a Start Menu shortcut.
 - **ExternalLib** — third-party executables (`yt-dlp.exe`, `ffmpeg.exe`) copied into the build output on `PostBuild`.
 
 ## Requirements
 
 - Windows
 - .NET 8 SDK
-- Visual Studio 2022 (17.14+) with the Visual Studio Installer Projects extension for building the installer
+- The [WiX Toolset](https://wixtoolset.org/) (`dotnet tool install --global wix`) if you want to build the MSI installer — not needed to just build/run the app. The [HeatWave Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=FireGiant.FireGiantHeatWaveDev17) adds IDE support for editing/building it inside Visual Studio.
 
 ## Building
 
@@ -36,6 +36,16 @@ dotnet build VideoDownloader.Wpf\VideoDownloader.Wpf.csproj -c Release
 ```
 
 The `PostBuild` target copies executables from `ExternalLib\` into the output directory automatically.
+
+### Building the installer
+
+Build the app in Release first (above), then:
+
+```
+dotnet build Installer\VideoDownloader.Installer.wixproj -c Release
+```
+
+This packages the app's Release output into `Installer\bin\Release\VideoDownloader-{version}-Setup.msi`.
 
 ## Running
 
