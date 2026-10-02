@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VideoDownloader — darmowy program do pobierania filmów na Windows</title>
+<meta name="description" content="Darmowy program open source (GUI dla yt-dlp) do pobierania filmów z YouTube i ponad 1000 innych serwisów na Windows. Wybór jakości, pobieranie wielu filmów naraz i historia pobrań.">
+<link rel="canonical" href="https://askowron.github.io/VideoDownloader/pl/">
+<link rel="alternate" hreflang="en" href="https://askowron.github.io/VideoDownloader/">
+<link rel="alternate" hreflang="pl" href="https://askowron.github.io/VideoDownloader/pl/">
+<link rel="alternate" hreflang="x-default" href="https://askowron.github.io/VideoDownloader/">
+<meta name="google-site-verification" content="pumOrrZgZ94DIDsizde30ZWzKR85RzIKjmUQSgOy2qk">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#14161C">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="VideoDownloader — darmowy program do pobierania filmów na Windows">
+<meta property="og:description" content="Darmowy program open source (GUI dla yt-dlp) do pobierania filmów z YouTube i ponad 1000 innych serwisów na Windows. Wybór jakości, pobieranie wielu filmów naraz i historia pobrań.">
+<meta property="og:url" content="https://askowron.github.io/VideoDownloader/pl/">
+<meta property="og:image" content="https://askowron.github.io/VideoDownloader/assets/app-dark.png">
+<meta property="og:site_name" content="VideoDownloader">
+<meta property="og:locale" content="pl_PL">
+<meta property="og:locale:alternate" content="en_US">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VideoDownloader — darmowy program do pobierania filmów na Windows">
+<meta name="twitter:description" content="Darmowy program open source (GUI dla yt-dlp) do pobierania filmów z YouTube i ponad 1000 innych serwisów na Windows. Wybór jakości, pobieranie wielu filmów naraz i historia pobrań.">
+<meta name="twitter:image" content="https://askowron.github.io/VideoDownloader/assets/app-dark.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "VideoDownloader",
+      "description": "Darmowy program open source (GUI dla yt-dlp) do pobierania filmów z YouTube i ponad 1000 innych serwisów na Windows, z wyborem jakości, pobieraniem wielu filmów naraz i przeszukiwalną historią pobrań.",
+      "operatingSystem": "Windows 10, Windows 11",
+      "applicationCategory": "MultimediaApplication",
+      "softwareVersion": "0.7.0",
+      "softwareRequirements": ".NET 8 Desktop Runtime",
+      "inLanguage": [
+        "pl",
+        "en"
+      ],
+      "isAccessibleForFree": true,
+      "featureList": [
+        "Pobieranie filmów z YouTube i każdej strony obsługiwanej przez yt-dlp",
+        "Wybór rozdzielczości i ścieżki audio albo automatyczny wybór najlepszej jakości",
+        "Pobieranie wielu filmów naraz z listy linków lub pliku .txt",
+        "Ustawiana liczba jednoczesnych pobrań",
+        "Przeszukiwalna lokalna historia pobrań z ponownym pobieraniem jednym kliknięciem",
+        "Jasny, ciemny i systemowy motyw",
+        "Interfejs po polsku i po angielsku",
+        "Automatyczne aktualizacje yt-dlp"
+      ],
+      "url": "https://askowron.github.io/VideoDownloader/pl/",
+      "downloadUrl": "https://github.com/askowron/VideoDownloader/releases/latest",
+      "image": "https://askowron.github.io/VideoDownloader/assets/app-dark.png",
+      "screenshot": [
+        "https://askowron.github.io/VideoDownloader/assets/app-light.png",
+        "https://askowron.github.io/VideoDownloader/assets/app-dark.png"
+      ],
+      "codeRepository": "https://github.com/askowron/VideoDownloader",
+      "license": "https://github.com/askowron/VideoDownloader/blob/main/LICENSE",
+      "author": {
+        "@type": "Person",
+        "name": "Adam Skowroński"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "PLN"
+      }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Czy VideoDownloader jest darmowy?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Tak. VideoDownloader to darmowe oprogramowanie open source na licencji GPLv2. Bez reklam, bez zakładania konta i bez telemetrii."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Z jakich stron można pobierać filmy?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Z każdej strony obsługiwanej przez yt-dlp, czyli z YouTube i ponad tysiąca innych serwisów wideo. Program przy każdym uruchomieniu sam aktualizuje dołączony yt-dlp, więc obsługa nowych stron i zmian w serwisach pojawia się bez ponownej instalacji."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "W jakim formacie zapisywane są filmy?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Filmy są zapisywane jako MP4. Wybrane ścieżki wideo i audio są łączone za pomocą dołączonego FFmpeg, więc plik odtworzysz w każdym popularnym odtwarzaczu."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Czy można pobrać wiele filmów naraz?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Tak. Wklej lub przeciągnij listę linków albo wczytaj je z pliku .txt, a każdy link trafi do kolejki pobierania. Możesz ustawić, ile pobrań ma działać jednocześnie."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Czego potrzebuję, żeby uruchomić program?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Windows 10 lub 11 (64-bit) oraz .NET 8 Desktop Runtime. Zainstaluj program instalatorem .msi albo użyj wersji przenośnej .zip i uruchom bezpośrednio VideoDownloader.Wpf.exe."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Czy program jest po polsku?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Tak. Interfejs jest dostępny po polsku i po angielsku. Przy pierwszym uruchomieniu program dopasowuje się do języka Windows, a język można w każdej chwili zmienić ręcznie."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<link rel="icon" href="../assets/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14161C;
+    --surface:#1B1E26;
+    --ink:#EDEFF3;
+    --ink-muted:#9AA3B2;
+    --accent:#5B8DEF;
+    --accent-deep:#8BAEF6;
+    --ok:#3FC383;
+    --warn:#E3B54C;
+    --line:#2C303A;
+    --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: "IBM Plex Sans", -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--accent-deep);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px;}
+
+  /* ---- top bar ---- */
+  header.top{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:22px 24px;
+  }
+  .wordmark{
+    display:flex;align-items:center;gap:10px;
+    font-family:var(--mono);font-weight:700;font-size:17px;color:var(--ink);
+  }
+  .wordmark img{width:22px;height:22px;border-radius:5px;}
+  .top nav{display:flex;gap:18px;}
+  .top nav a{
+    font-family:var(--mono);font-size:14px;font-weight:600;color:var(--ink);
+    display:flex;align-items:center;gap:6px;
+  }
+  .top nav a:hover{color:var(--accent-deep);text-decoration:none;}
+
+  /* ---- hero ---- */
+  .hero{
+    display:grid;grid-template-columns:1.05fr 1fr;gap:56px;
+    align-items:center;
+    padding:36px 0 84px;
+  }
+  .hero > *{min-width:0;}
+  .hero h1{
+    font-family:var(--mono);
+    font-weight:700;
+    font-size:44px;
+    line-height:1.12;
+    letter-spacing:-0.01em;
+    margin:0 0 20px;
+    max-width:15ch;
+  }
+  .hero p.lede{
+    font-size:18px;
+    color:var(--ink-muted);
+    max-width:46ch;
+    margin:0 0 30px;
+  }
+  .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:14px;}
+  .btn{
+    font-family:var(--sans);font-weight:600;font-size:15px;
+    padding:13px 22px;border-radius:7px;border:1px solid transparent;
+    cursor:pointer;display:inline-flex;align-items:center;gap:8px;
+  }
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:hover{background:var(--accent-deep);text-decoration:none;}
+  .btn-secondary{background:transparent;border-color:var(--line);color:var(--ink);}
+  .btn-secondary:hover{border-color:var(--ink-muted);text-decoration:none;}
+  .fine-print{font-size:13.5px;color:var(--ink-muted);margin:0;}
+  .fine-print a{color:var(--ink-muted);text-decoration:underline;}
+
+  /* ---- queue mockup ---- */
+  .mock{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:10px;
+    overflow:hidden;
+  }
+  .mock-row{padding:16px 18px;border-top:1px solid var(--line);}
+  .mock-row:first-child{border-top:none;}
+  .mock-row-top{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px;}
+  .mock-title{font-size:14.5px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .mock-status{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:0.01em;}
+  .mock-status.dl{color:var(--accent-deep);}
+  .mock-status.ok{color:var(--ok);}
+  .mock-status.wait{color:var(--ink-muted);}
+  .track{height:6px;border-radius:4px;background:var(--line);overflow:hidden;margin-bottom:8px;}
+  .fill{height:100%;border-radius:4px;width:0%;transition:width 1.1s cubic-bezier(.2,.7,.2,1);}
+  .fill.dl{background:var(--accent);}
+  .fill.ok{background:var(--ok);}
+  .fill.wait{background:var(--line);}
+  .mock-meta{font-family:var(--mono);font-size:12.5px;color:var(--ink-muted);display:flex;gap:14px;}
+  @media (prefers-reduced-motion: reduce){
+    .fill{transition:none;}
+  }
+
+  /* ---- sections ---- */
+  section{padding:64px 0;border-top:1px solid var(--line);}
+  h2{
+    font-family:var(--sans);font-weight:700;font-size:28px;
+    margin:0 0 34px;letter-spacing:-0.01em;
+  }
+
+  .feature-list{display:flex;flex-direction:column;}
+  .feature{
+    display:grid;grid-template-columns:220px 1fr;gap:28px;
+    padding:22px 0;border-top:1px solid var(--line);
+  }
+  .feature:first-child{border-top:none;padding-top:0;}
+  .feature dt{font-weight:600;font-size:16px;min-width:0;}
+  .feature dd{margin:0;color:var(--ink-muted);max-width:56ch;min-width:0;}
+
+  .shots{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+  figure{margin:0;}
+  figure img{width:100%;display:block;border:1px solid var(--line);border-radius:10px;}
+  figcaption{font-family:var(--mono);font-size:13px;color:var(--ink-muted);margin-top:10px;}
+
+  .download-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;
+    padding:36px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:24px;
+  }
+  .download-card > *{min-width:0;}
+  .download-card .left p{margin:6px 0 0;color:var(--ink-muted);max-width:44ch;}
+  .download-card .left strong{font-size:19px;}
+
+  .faq details{border-top:1px solid var(--line);padding:18px 0;}
+  .faq details:last-child{border-bottom:1px solid var(--line);}
+  .faq summary{font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary::after{content:"+";font-family:var(--mono);color:var(--ink-muted);}
+  .faq details[open] summary::after{content:"2";}
+  .faq details p{margin:10px 0 0;color:var(--ink-muted);max-width:68ch;}
+
+  footer{
+    padding:36px 0 60px;
+    display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;
+    color:var(--ink-muted);font-size:14px;
+  }
+  footer a{color:var(--ink-muted);text-decoration:underline;}
+  footer .links{display:flex;gap:18px;}
+
+  @media (max-width: 860px){
+    .hero{grid-template-columns:1fr;gap:40px;padding-bottom:56px;}
+    .hero h1{font-size:34px;max-width:none;}
+    .feature{grid-template-columns:1fr;gap:6px;}
+    .shots{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top wrap">
+  <div class="wordmark"><img src="../assets/favicon.ico" alt=""> VideoDownloader</div>
+  <nav><a href="../" hreflang="en" lang="en">English</a><a href="https://github.com/askowron/VideoDownloader">GitHub</a></nav>
+</header>
+
+<div class="wrap">
+  <section class="hero" style="border-top:none;">
+    <div>
+      <h1>Wklej link, dostaniesz plik wideo.</h1>
+      <p class="lede">Darmowy program open source dla Windows, nakładka graficzna (GUI) na yt-dlp, który pobiera filmy z YouTube i ponad 1000 innych serwisów. Wklej jeden link albo całą listę, wybierz jakość, a program pobierze, połączy i zapamięta wszystkie pobrania.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/askowron/VideoDownloader/releases/latest">Pobierz na Windows</a>
+        <a class="btn btn-secondary" href="https://github.com/askowron/VideoDownloader">Kod źródłowy</a>
+      </div>
+      <p class="fine-print">Wymaga Windows i <a href="https://dotnet.microsoft.com/pl-pl/download/dotnet/8.0/runtime">.NET 8 Desktop Runtime</a>.</p>
+    </div>
+
+    <div class="mock" id="mock" aria-hidden="true">
+      <div class="mock-row">
+        <div class="mock-row-top">
+          <span class="mock-title">Wykład z konferencji, 2024</span>
+          <span class="mock-status dl">Pobieranie</span>
+        </div>
+        <div class="track"><div class="fill dl" data-target="74"></div></div>
+        <div class="mock-meta"><span>3.1 MiB/s</span><span>00:11 do końca</span></div>
+      </div>
+      <div class="mock-row">
+        <div class="mock-row-top">
+          <span class="mock-title">Poradnik, część 2</span>
+          <span class="mock-status ok">Ukończono</span>
+        </div>
+        <div class="track"><div class="fill ok" data-target="100"></div></div>
+        <div class="mock-meta"><span>212 MB</span><span>4 min 02 s</span></div>
+      </div>
+      <div class="mock-row">
+        <div class="mock-row-top">
+          <span class="mock-title">Rodzinny przepis na wideo</span>
+          <span class="mock-status wait">Oczekuje</span>
+        </div>
+        <div class="track"><div class="fill wait" data-target="0"></div></div>
+        <div class="mock-meta"><span>w kolejce</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Co właściwie robi</h2>
+    <dl class="feature-list">
+      <div class="feature">
+        <dt>Wiele filmów naraz</dt>
+        <dd>Wrzuć listę linków albo wskaż plik <code>.txt</code>, a program doda każdy z nich do kolejki.</dd>
+      </div>
+      <div class="feature">
+        <dt>Ty decydujesz o jakości</dt>
+        <dd>Wybierz dokładną rozdzielczość i ścieżkę audio albo pozwól programowi samemu dobrać najlepszą kombinację.</dd>
+      </div>
+      <div class="feature">
+        <dt>Historia, która pamięta</dt>
+        <dd>Każda próba — ukończona, nieudana czy anulowana — jest zapisywana lokalnie. Przeszukuj historię, pobierz coś ponownie albo przejdź od razu do strony źródłowej.</dd>
+      </div>
+      <div class="feature">
+        <dt>Wygląda tak, jak chcesz</dt>
+        <dd>Jasny, ciemny albo zgodny z Windows. Przełącza się od razu, bez restartu.</dd>
+      </div>
+      <div class="feature">
+        <dt>Po polsku i po angielsku</dt>
+        <dd>Przy pierwszym uruchomieniu dopasowuje się do języka systemu, ale możesz też wybrać język ręcznie.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section>
+    <h2>Tak wygląda aplikacja</h2>
+    <div class="shots">
+      <figure>
+        <img src="../assets/app-light.png" alt="Główne okno VideoDownloader w jasnym motywie, z polem na link, polem folderu docelowego i paskiem stanu." loading="lazy">
+        <figcaption>Jasny</figcaption>
+      </figure>
+      <figure>
+        <img src="../assets/app-dark.png" alt="To samo okno w ciemnym motywie." loading="lazy">
+        <figcaption>Ciemny</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="faq">
+    <h2>Częste pytania</h2>
+    <div class="faq">
+      <details>
+        <summary>Czy VideoDownloader jest darmowy?</summary>
+        <p>Tak. VideoDownloader to darmowe oprogramowanie open source na licencji GPLv2. Bez reklam, bez zakładania konta i bez telemetrii.</p>
+      </details>
+      <details>
+        <summary>Z jakich stron można pobierać filmy?</summary>
+        <p>Z każdej strony obsługiwanej przez yt-dlp, czyli z YouTube i ponad tysiąca innych serwisów wideo. Program przy każdym uruchomieniu sam aktualizuje dołączony yt-dlp, więc obsługa nowych stron i zmian w serwisach pojawia się bez ponownej instalacji.</p>
+      </details>
+      <details>
+        <summary>W jakim formacie zapisywane są filmy?</summary>
+        <p>Filmy są zapisywane jako MP4. Wybrane ścieżki wideo i audio są łączone za pomocą dołączonego FFmpeg, więc plik odtworzysz w każdym popularnym odtwarzaczu.</p>
+      </details>
+      <details>
+        <summary>Czy można pobrać wiele filmów naraz?</summary>
+        <p>Tak. Wklej lub przeciągnij listę linków albo wczytaj je z pliku .txt, a każdy link trafi do kolejki pobierania. Możesz ustawić, ile pobrań ma działać jednocześnie.</p>
+      </details>
+      <details>
+        <summary>Czego potrzebuję, żeby uruchomić program?</summary>
+        <p>Windows 10 lub 11 (64-bit) oraz .NET 8 Desktop Runtime. Zainstaluj program instalatorem .msi albo użyj wersji przenośnej .zip i uruchom bezpośrednio VideoDownloader.Wpf.exe.</p>
+      </details>
+      <details>
+        <summary>Czy program jest po polsku?</summary>
+        <p>Tak. Interfejs jest dostępny po polsku i po angielsku. Przy pierwszym uruchomieniu program dopasowuje się do języka Windows, a język można w każdej chwili zmienić ręcznie.</p>
+      </details>
+    </div>
+  </section>
+
+  <section>
+    <h2>Pobierz</h2>
+    <div class="download-card">
+      <div class="left">
+        <strong>VideoDownloader dla Windows</strong>
+        <p>Uruchom instalator <code>.msi</code> albo pobierz przenośną wersję <code>.zip</code> i po prostu uruchom <code>VideoDownloader.Wpf.exe</code>. Bez konta, nic nie wysyła danych w tle.</p>
+      </div>
+      <div class="cta-row" style="margin:0;">
+        <a class="btn btn-primary" href="https://github.com/askowron/VideoDownloader/releases/latest">Pobierz najnowszą wersję</a>
+        <a class="btn btn-secondary" href="https://github.com/askowron/VideoDownloader/releases">Wszystkie wersje</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer class="wrap">
+  <div>VideoDownloader to wolne oprogramowanie na licencji <a href="https://github.com/askowron/VideoDownloader/blob/main/LICENSE">GPLv2</a>. Autor: Adam Skowroński.</div>
+  <div class="links">
+    <a href="https://github.com/askowron/VideoDownloader">GitHub</a>
+    <a href="https://buycoffee.to/rico">Postaw autorowi kawę</a>
+  </div>
+</footer>
+
+<script>
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    window.addEventListener('DOMContentLoaded', function () {
+      requestAnimationFrame(function () {
+        document.querySelectorAll('#mock .fill').forEach(function (el) {
+          el.style.width = el.getAttribute('data-target') + '%';
+        });
+      });
+    });
+  } else {
+    document.querySelectorAll('#mock .fill').forEach(function (el) {
+      el.style.width = el.getAttribute('data-target') + '%';
+    });
+  }
+</script>
+</body>
+</html>
