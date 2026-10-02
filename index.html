@@ -3,38 +3,73 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VideoDownloader — a small Windows app for pulling down video</title>
-<meta name="description" content="Paste a link, pick a quality, get a file. A Windows app built on yt-dlp and FFmpeg, with batch downloads, a searchable history, and light/dark themes.">
+<title>VideoDownloader — free yt-dlp GUI video downloader for Windows</title>
+<meta name="description" content="Free, open-source yt-dlp GUI for Windows. Download videos from YouTube and 1000+ other sites: pick the quality, queue batch downloads, and keep a searchable history.">
 <link rel="canonical" href="https://askowron.github.io/VideoDownloader/">
 <meta name="google-site-verification" content="pumOrrZgZ94DIDsizde30ZWzKR85RzIKjmUQSgOy2qk">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#14161C">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="VideoDownloader — a small Windows app for pulling down video">
-<meta property="og:description" content="Paste a link, pick a quality, get a file. A Windows app built on yt-dlp and FFmpeg, with batch downloads, a searchable history, and light/dark themes.">
+<meta property="og:title" content="VideoDownloader — free yt-dlp GUI video downloader for Windows">
+<meta property="og:description" content="Free, open-source yt-dlp GUI for Windows. Download videos from YouTube and 1000+ other sites: pick the quality, queue batch downloads, and keep a searchable history.">
 <meta property="og:url" content="https://askowron.github.io/VideoDownloader/">
 <meta property="og:image" content="https://askowron.github.io/VideoDownloader/assets/app-dark.png">
 <meta property="og:site_name" content="VideoDownloader">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="VideoDownloader — a small Windows app for pulling down video">
-<meta name="twitter:description" content="Paste a link, pick a quality, get a file. A Windows app built on yt-dlp and FFmpeg, with batch downloads, a searchable history, and light/dark themes.">
+<meta name="twitter:title" content="VideoDownloader — free yt-dlp GUI video downloader for Windows">
+<meta name="twitter:description" content="Free, open-source yt-dlp GUI for Windows. Download videos from YouTube and 1000+ other sites: pick the quality, queue batch downloads, and keep a searchable history.">
 <meta name="twitter:image" content="https://askowron.github.io/VideoDownloader/assets/app-dark.png">
 
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "name": "VideoDownloader",
-  "operatingSystem": "Windows",
-  "applicationCategory": "UtilitiesApplication",
-  "url": "https://askowron.github.io/VideoDownloader/",
-  "downloadUrl": "https://github.com/askowron/VideoDownloader/releases/latest",
-  "codeRepository": "https://github.com/askowron/VideoDownloader",
-  "license": "https://github.com/askowron/VideoDownloader/blob/main/LICENSE",
-  "author": { "@type": "Person", "name": "Adam Skowroński" },
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "name": "VideoDownloader",
+      "description": "Free, open-source yt-dlp GUI for Windows. Download videos from YouTube and 1000+ other sites with quality selection, batch downloads, and a searchable download history.",
+      "operatingSystem": "Windows 10, Windows 11",
+      "applicationCategory": "MultimediaApplication",
+      "softwareVersion": "0.7.0",
+      "softwareRequirements": ".NET 8 Desktop Runtime",
+      "inLanguage": ["en", "pl"],
+      "isAccessibleForFree": true,
+      "featureList": [
+        "Download videos from YouTube and any site supported by yt-dlp",
+        "Choose video resolution and audio track, or auto-select the best quality",
+        "Batch downloads from a list of links or a .txt file",
+        "Configurable number of simultaneous downloads",
+        "Searchable local download history with one-click redownload",
+        "Light, dark, and system themes",
+        "English and Polish user interface",
+        "Automatic yt-dlp updates"
+      ],
+      "url": "https://askowron.github.io/VideoDownloader/",
+      "downloadUrl": "https://github.com/askowron/VideoDownloader/releases/latest",
+      "image": "https://askowron.github.io/VideoDownloader/assets/app-dark.png",
+      "screenshot": [
+        "https://askowron.github.io/VideoDownloader/assets/app-light.png",
+        "https://askowron.github.io/VideoDownloader/assets/app-dark.png"
+      ],
+      "codeRepository": "https://github.com/askowron/VideoDownloader",
+      "license": "https://github.com/askowron/VideoDownloader/blob/main/LICENSE",
+      "author": { "@type": "Person", "name": "Adam Skowroński" },
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "Is VideoDownloader free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. VideoDownloader is free, open-source software licensed under the GPLv2. There are no ads, no accounts, and no telemetry."}},
+        {"@type": "Question", "name": "Which websites can I download videos from?", "acceptedAnswer": {"@type": "Answer", "text": "Any site supported by yt-dlp, which includes YouTube and over a thousand other video sites. VideoDownloader keeps its bundled yt-dlp up to date automatically on every start, so support for new sites and site changes arrives without reinstalling the app."}},
+        {"@type": "Question", "name": "What format are downloaded videos saved in?", "acceptedAnswer": {"@type": "Answer", "text": "Videos are saved as MP4. The chosen video and audio streams are merged with the bundled FFmpeg, so the file plays in any standard media player."}},
+        {"@type": "Question", "name": "Can I download many videos at once?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Paste or drag-and-drop a list of links, or load them from a .txt file, and every link is added to the download queue. You can set how many downloads run at the same time."}},
+        {"@type": "Question", "name": "What do I need to run it?", "acceptedAnswer": {"@type": "Answer", "text": "Windows 10 or 11 (64-bit) and the .NET 8 Desktop Runtime. Install it with the .msi installer, or use the portable .zip and run VideoDownloader.Wpf.exe directly."}},
+        {"@type": "Question", "name": "Is the app available in Polish?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The interface is available in English and Polish. It follows your Windows language on first run, and you can switch it manually at any time."}}
+      ]
+    }
+  ]
 }
 </script>
 
@@ -177,6 +212,14 @@
   .download-card .left p{margin:6px 0 0;color:var(--ink-muted);max-width:44ch;}
   .download-card .left strong{font-size:19px;}
 
+  .faq details{border-top:1px solid var(--line);padding:18px 0;}
+  .faq details:last-child{border-bottom:1px solid var(--line);}
+  .faq summary{font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary::after{content:"+";font-family:var(--mono);color:var(--ink-muted);}
+  .faq details[open] summary::after{content:"2";}
+  .faq details p{margin:10px 0 0;color:var(--ink-muted);max-width:68ch;}
+
   footer{
     padding:36px 0 60px;
     display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;
@@ -204,7 +247,7 @@
   <section class="hero" style="border-top:none;">
     <div>
       <h1>Turn a link into a video file.</h1>
-      <p class="lede">A small Windows app built around yt-dlp and FFmpeg. Paste one link or a whole list, choose the quality, and it downloads, merges, and remembers everything you've pulled down.</p>
+      <p class="lede">A free, open-source yt-dlp GUI for Windows that downloads video from YouTube and 1000+ other sites. Paste one link or a whole list, choose the quality, and it downloads, merges, and remembers everything you've pulled down.</p>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://github.com/askowron/VideoDownloader/releases/latest">Download for Windows</a>
         <a class="btn btn-secondary" href="https://github.com/askowron/VideoDownloader">View source</a>
@@ -277,6 +320,36 @@
         <img src="assets/app-dark.png" alt="The same window in dark theme." loading="lazy">
         <figcaption>Dark</figcaption>
       </figure>
+    </div>
+  </section>
+
+  <section id="faq">
+    <h2>Questions people ask</h2>
+    <div class="faq">
+      <details>
+        <summary>Is VideoDownloader free?</summary>
+        <p>Yes. VideoDownloader is free, open-source software licensed under the GPLv2. There are no ads, no accounts, and no telemetry.</p>
+      </details>
+      <details>
+        <summary>Which websites can I download videos from?</summary>
+        <p>Any site supported by yt-dlp, which includes YouTube and over a thousand other video sites. VideoDownloader keeps its bundled yt-dlp up to date automatically on every start, so support for new sites and site changes arrives without reinstalling the app.</p>
+      </details>
+      <details>
+        <summary>What format are downloaded videos saved in?</summary>
+        <p>Videos are saved as MP4. The chosen video and audio streams are merged with the bundled FFmpeg, so the file plays in any standard media player.</p>
+      </details>
+      <details>
+        <summary>Can I download many videos at once?</summary>
+        <p>Yes. Paste or drag-and-drop a list of links, or load them from a .txt file, and every link is added to the download queue. You can set how many downloads run at the same time.</p>
+      </details>
+      <details>
+        <summary>What do I need to run it?</summary>
+        <p>Windows 10 or 11 (64-bit) and the .NET 8 Desktop Runtime. Install it with the .msi installer, or use the portable .zip and run VideoDownloader.Wpf.exe directly.</p>
+      </details>
+      <details>
+        <summary>Is the app available in Polish?</summary>
+        <p>Yes. The interface is available in English and Polish. It follows your Windows language on first run, and you can switch it manually at any time.</p>
+      </details>
     </div>
   </section>
 
