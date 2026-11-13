@@ -8,7 +8,7 @@ A Windows desktop app (.NET 8, WPF) for downloading videos via [yt-dlp](https://
 - Batch downloads: drag-and-drop a list of URLs, or load them from a `.txt` file, to queue many downloads at once.
 - Configurable number of simultaneous downloads.
 - Per-job progress (percentage, speed, ETA) with cancel support.
-- Automatically keeps the bundled `yt-dlp.exe` up to date (`yt-dlp -U`) on startup.
+- Automatically keeps `yt-dlp.exe` up to date (`yt-dlp -U`) on startup. The self-updating copy lives in `%LOCALAPPDATA%\APPIT\VideoDownloader`, so updates work without admin rights and never touch the installed files.
 - UI available in English and Polish (auto-detected from the OS, or set manually).
 - Light/Dark/System UI theme, switchable at runtime.
 - Download history: every attempt (completed, failed, or canceled) is logged to a local SQLite database, browsable with search, one-click redownload, "open in browser", and a clear-history action.
