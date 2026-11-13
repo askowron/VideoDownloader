@@ -127,6 +127,16 @@ namespace VideoDownloader.Core
                     extraOptions
                 );
 
+                // YoutubeDLSharp always passes -i (ignore errors), so a failed merge/download
+                // doesn't throw - it only shows up as Success == false plus ERROR: lines.
+                if (!result.Success)
+                {
+                    var errors = result.ErrorOutput?.Where(l => l.StartsWith("ERROR", StringComparison.OrdinalIgnoreCase)).ToArray();
+                    throw new Exception(errors?.Length > 0
+                        ? string.Join("\n", errors)
+                        : (result.ErrorOutput?.Length > 0 ? string.Join("\n", result.ErrorOutput) : Localization.T("Unknown error!")));
+                }
+
                 // yt-dlp's progress hook reports the size of the separate video+audio streams
                 // being fetched, not the final merged/recoded MP4 - relying on it left the
                 // history's Size/Avg. speed columns wrong or empty. The real output file on
