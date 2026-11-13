@@ -4,7 +4,7 @@ A Windows desktop app (.NET 8, WPF) for downloading videos via [yt-dlp](https://
 
 ## Features
 
-- Paste a link (or let it auto-detect one from the clipboard) and pick a video/audio quality, or let it auto-select the best available.
+- Paste a link (or let it auto-detect one from the clipboard) and pick a video/audio quality, or let it auto-select the best available. Videos with multiple audio tracks (e.g. original + auto-dubbed languages) and HLS/m3u8 streams are supported.
 - Batch downloads: drag-and-drop a list of URLs, or load them from a `.txt` file, to queue many downloads at once.
 - Configurable number of simultaneous downloads.
 - Per-job progress (percentage, speed, ETA) with cancel support.
@@ -12,6 +12,14 @@ A Windows desktop app (.NET 8, WPF) for downloading videos via [yt-dlp](https://
 - UI available in English and Polish (auto-detected from the OS, or set manually).
 - Light/Dark/System UI theme, switchable at runtime.
 - Download history: every attempt (completed, failed, or canceled) is logged to a local SQLite database, browsable with search, one-click redownload, "open in browser", and a clear-history action.
+
+## Installing
+
+Download the `.msi` installer or the portable `.zip` from [Releases](https://github.com/askowron/VideoDownloader/releases/latest), or install with winget:
+
+```
+winget install APPIT.VideoDownloader
+```
 
 ## Solution structure
 

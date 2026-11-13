@@ -7,7 +7,7 @@
          X86 even though the packaged app is x64 - mismatched with Product.wxs's Platform="x64"
          and with the winget manifest's declared Architecture: x64. -->
     <Platform>x64</Platform>
-    <ProductVersion>0.7.0</ProductVersion>
+    <ProductVersion>0.7.1</ProductVersion>
     <OutputName>VideoDownloader-$(ProductVersion)-Setup</OutputName>
     <!-- Publish output of VideoDownloader.Wpf that gets packaged into the MSI. Build that
          project in Release first - this project only packages the existing output, it doesn't
