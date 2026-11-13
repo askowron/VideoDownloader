@@ -35,7 +35,7 @@ namespace VideoDownloader.Wpf.ViewModels
             }
         }
 
-        private static string GetVersion()
+        internal static string GetVersion()
         {
             var version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
                 ?? Assembly.GetExecutingAssembly().GetName().Version?.ToString()

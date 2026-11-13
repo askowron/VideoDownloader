@@ -11,6 +11,7 @@ namespace VideoDownloader.Wpf
         public MainWindow()
         {
             InitializeComponent();
+            Title = $"VideoDownloader {AboutViewModel.GetVersion()}";
             _viewModel = new MainViewModel(new DialogService());
             DataContext = _viewModel;
         }
