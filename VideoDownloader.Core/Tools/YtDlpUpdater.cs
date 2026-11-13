@@ -3,14 +3,69 @@ using System.Diagnostics;
 namespace VideoDownloader.Core.Tools
 {
     /// <summary>
-    /// Wraps yt-dlp's own self-update mechanism (yt-dlp -U) to keep the bundled
-    /// binary current with https://github.com/yt-dlp/yt-dlp releases.
+    /// Wraps yt-dlp's own self-update mechanism (yt-dlp -U) to keep yt-dlp current with
+    /// https://github.com/yt-dlp/yt-dlp releases.
     /// </summary>
+    /// <remarks>
+    /// The copy shipped next to the app (<see cref="BundledPath"/>) is never run or updated in
+    /// place: under Program Files a non-elevated -U can't write it, and an elevated one makes it
+    /// newer than the MSI's copy, so the next major upgrade's file costing skips installing the
+    /// "older" bundled file and RemoveExistingProducts then deletes the old one, leaving no
+    /// yt-dlp.exe at all. Instead a per-user working copy under %LOCALAPPDATA% is seeded from
+    /// the bundled one and that copy is the one that runs and self-updates.
+    /// </remarks>
     public static class YtDlpUpdater
     {
         private static readonly TimeSpan Timeout = TimeSpan.FromSeconds(60);
+        private static readonly object SeedLock = new();
 
-        public static string ExecutablePath => Path.Combine(AppContext.BaseDirectory, "yt-dlp.exe");
+        /// <summary>The yt-dlp.exe installed alongside the app (read-only seed).</summary>
+        public static string BundledPath => Path.Combine(AppContext.BaseDirectory, "yt-dlp.exe");
+
+        /// <summary>The per-user, self-updating working copy.</summary>
+        public static string WorkingCopyPath => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            Windows.Registry.COMPANY,
+            Windows.Registry.APPNAME,
+            "yt-dlp.exe");
+
+        /// <summary>
+        /// Returns the yt-dlp.exe to run: the working copy, (re)seeded from the bundled one when
+        /// it's missing or older than the bundled one. Falls back to the bundled path if seeding
+        /// fails, and to whichever copy exists if the other is missing.
+        /// </summary>
+        public static string ExecutablePath
+        {
+            get
+            {
+                string bundled = BundledPath;
+                string working = WorkingCopyPath;
+
+                lock (SeedLock)
+                {
+                    try
+                    {
+                        if (File.Exists(bundled) && (!File.Exists(working) || GetVersion(bundled) > GetVersion(working)))
+                        {
+                            Directory.CreateDirectory(Path.GetDirectoryName(working)!);
+                            File.Copy(bundled, working, overwrite: true);
+                        }
+                    }
+                    catch
+                    {
+                        // Locked (e.g. mid-update) or unwritable profile - use whatever exists.
+                    }
+                }
+
+                return File.Exists(working) ? working : bundled;
+            }
+        }
+
+        private static Version GetVersion(string path)
+        {
+            var info = FileVersionInfo.GetVersionInfo(path);
+            return new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart);
+        }
 
         /// <summary>
         /// Runs "yt-dlp.exe -U" and returns the trimmed output describing the result

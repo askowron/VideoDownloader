@@ -17,7 +17,7 @@ namespace VideoDownloader.Core
         public Downloader(Notifications notifications)
         {
             ytdl = new YoutubeDL();
-            ytdl.YoutubeDLPath = Path.Combine(AppContext.BaseDirectory, "yt-dlp.exe");
+            ytdl.YoutubeDLPath = YtDlpUpdater.ExecutablePath;
             ytdl.FFmpegPath = Path.Combine(AppContext.BaseDirectory, "ffmpeg.exe");
             videoUrl = string.Empty;
 
