@@ -69,8 +69,15 @@ $ConfigureFlags = @(
     "--disable-ffplay", "--disable-ffprobe",
     "--enable-ffmpeg",
     "--enable-protocol=file",
-    "--enable-demuxer=mov,matroska,webm",
+    # mpegts + aac: formaty HLS/m3u8 YouTube'a (np. 233-x/234-x audio, 269/312 wideo)
+    # przychodza jako MPEG-TS i surowy AAC (ADTS z tagiem ID3), nie jako mp4.
+    "--enable-demuxer=mov,matroska,webm,mpegts,aac",
     "--enable-muxer=mp4,webm,matroska",
+    # Dekodery tylko do sondowania - strumienie nadal sa kopiowane, nie transkodowane:
+    #  aac - surowy ADTS z HLS (bez niego: "sample rate not set" przy naglowku mp4),
+    #  vp9 - bez znanego pix_fmt muxer mp4 zapisuje pusty box vpcC i plik z wideo
+    #        VP9 (webm -> mp4) nie daje sie potem otworzyc ("Empty VP Codec Configuration box").
+    "--enable-decoder=aac,vp9",
     "--enable-parser=h264,hevc,vp8,vp9,av1,aac,opus,vorbis",
     "--enable-bsf=h264_mp4toannexb,hevc_mp4toannexb,aac_adtstoasc,extract_extradata",
     # ffmpeg.c wymaga avfiltra i tego konkretnego zestawu filtrow (ffmpeg_select w configure)
