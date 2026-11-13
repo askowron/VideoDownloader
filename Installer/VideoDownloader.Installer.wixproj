@@ -12,7 +12,10 @@
     <!-- Publish output of VideoDownloader.Wpf that gets packaged into the MSI. Build that
          project in Release first - this project only packages the existing output, it doesn't
          build the app itself. -->
-    <AppPublishDir>..\VideoDownloader.Wpf\bin\Release\net8.0-windows\</AppPublishDir>
+    <!-- Full path, not "..\...": MSBuild's wildcard Exclude patterns in StageAppFiles silently
+         failed to match against a ".."-relative Include, so .zip and linux/osx runtimes leaked
+         into the MSI (54 MB instead of ~22 MB). -->
+    <AppPublishDir>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\VideoDownloader.Wpf\bin\Release\net8.0-windows\'))</AppPublishDir>
     <!-- Windows-only subset of AppPublishDir, filtered by StageAppFiles below (no .pdb, no
          non-Windows native runtimes, no leftover release zip) since WiX's own Files/Exclude
          glob doesn't support a mid-segment wildcard like "runtimes\linux-*\**". -->
@@ -33,7 +36,13 @@
                           $(AppPublishDir)runtimes\maccatalyst-*\**\*.*;
                           $(AppPublishDir)runtimes\browser-*\**\*.*;
                           $(AppPublishDir)*.zip" />
+      <_StagedTargets Include="@(_AppFiles->'$(StagedAppDir)%(RecursiveDir)%(Filename)%(Extension)')" />
+      <!-- Files left over from an earlier stage (dropped from, or wrongly let into, the app output).
+           Deleted file-by-file rather than RemoveDir: the repo lives under OneDrive, which can hold
+           a directory handle and make RemoveDir fail with "access denied". -->
+      <_StaleStaged Include="$(StagedAppDir)**\*.*" Exclude="@(_StagedTargets)" />
     </ItemGroup>
+    <Delete Files="@(_StaleStaged)" />
     <Copy SourceFiles="@(_AppFiles)"
           DestinationFiles="@(_AppFiles->'$(StagedAppDir)%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true" />
