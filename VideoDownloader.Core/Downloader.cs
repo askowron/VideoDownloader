@@ -108,6 +108,12 @@ namespace VideoDownloader.Core
                 var extraOptions = new OptionSet()
                 {
                     Output = outputPath,
+                    // yt-dlp's temp path defaults to its working directory, which is the
+                    // install dir under Program Files when launched from the Start Menu
+                    // shortcut. --check-formats writes tmp*.tmp probe files there, failing
+                    // with "[Errno 13] Permission denied" for non-elevated users. The value
+                    // is quoted on the command line, so a trailing '\' would escape the quote.
+                    Paths = "temp:" + Path.TrimEndingDirectorySeparator(Path.GetTempPath()),
                     CheckFormats = true,
                     //CheckAllFormats = true,
                     CustomOptions = new IOption[]
