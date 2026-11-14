@@ -7,7 +7,7 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Version>0.7.2</Version>
+    <Version>0.7.3</Version>
     <ApplicationIcon>Resources\VideoDownloader.ico</ApplicationIcon>
   </PropertyGroup>
 
